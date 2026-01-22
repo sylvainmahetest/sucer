@@ -1,0 +1,490 @@
+:root
+{
+  --colorA: rgb(0, 0, 0);
+  --colorB: rgb(20, 20, 20);
+  --colorC: rgb(70, 70, 70);
+  --colorD: rgb(150, 150, 150);
+  --colorE: rgb(200, 200, 200);
+  --colorF: rgb(230, 230, 230);
+  --colorG: rgb(255, 255, 255);
+  --colorH: rgba(40, 40, 40, 0.2);
+}
+
+@font-face
+{
+  font-family: "fontA";
+  src: url("Inter-VariableFont_opsz,wght.ttf") format("truetype");
+}
+
+@font-face
+{
+  font-family: "fontB";
+  src: url("RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf") format("truetype");
+}
+
+@font-face
+{
+  font-family: "fontC";
+  src: url("Oswald-VariableFont_wght.ttf") format("truetype");
+}
+
+html
+{
+  z-index: 0;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  position: relative;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: center;
+  text-align-last: center;
+  left: 0px;
+  right: auto;
+  top: 0px;
+  bottom: auto;
+  width: 100%;
+  min-width: auto;
+  max-width: auto;
+  height: 100%;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent;
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: unset;
+  font-size: 0px;
+  font-weight: 100;
+  letter-spacing: 0px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: transparent;
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body
+{
+  z-index: 0;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  position: relative;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: center;
+  text-align-last: center;
+  left: 0px;
+  right: auto;
+  top: 0px;
+  bottom: auto;
+  width: 100%;
+  min-width: auto;
+  max-width: auto;
+  height: 100%;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: rgb(12, 12, 12);
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: unset;
+  font-size: 0px;
+  font-weight: 100;
+  letter-spacing: 0px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: transparent;
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body canvas tag-canvas
+{
+  z-index: 0;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  position: fixed;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: center;
+  text-align-last: center;
+  left: 0px;
+  right: auto;
+  top: 0px;
+  bottom: auto;
+  width: 0px;
+  min-width: auto;
+  max-width: auto;
+  height: 0px;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent;
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: unset;
+  font-size: 0px;
+  font-weight: 100;
+  letter-spacing: 0px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: transparent;
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: visible;
+  overflow-y: visible;
+  scrollbar-width: none;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body tag-smoke
+{
+  z-index: 0;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: absolute;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: center;
+  text-align-last: center;
+  left: 0px;
+  right: auto;
+  top: 0px;
+  bottom: auto;
+  width: 0px;
+  min-width: auto;
+  max-width: auto;
+  height: 0px;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent/*#ffffff*/;
+  background-image: radial-gradient(circle, #ffffff, #000000)/*none*/;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: unset;
+  font-size: 0px;
+  font-weight: 100;
+  letter-spacing: 0px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: transparent;
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: visible;
+  overflow-y: visible;
+  scrollbar-width: none;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+
+
+
+
+
+
+
+@media (max-width: 639px)
+{
+  
+}
+
+@media (min-width: 640px)
+{
+  
+}
