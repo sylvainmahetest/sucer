@@ -6,7 +6,7 @@ let _orientationScreen = 1;
 let _rxAccelerometer = 0;
 let _ryAccelerometer = 0;
 let _rzAccelerometer = 0;
-let _tzAccelerometer = 0;
+//let _tzAccelerometer = 0;
 
 function randomBinary(a, b)
 {
@@ -56,28 +56,22 @@ function clampPositiveSymmetricalMinMax(value, minMax)
     return valueClamp;
 }
 
-function backgroundAnimation()
+function imu()
 {
     let alphaAccelerometer = 0;
     let betaAccelerometer = 0;
     let gammaAccelerometer = 0;
-    let zAccelerometer = 0;
-    const SMOOTH_R = 0.001/*0.001*/;
-    const SMOOTH_T = 0.008/*0.008*/;
-    const SMOOTH_RT = 0.001/*0.004*/;
-    const TRAVEL_RXY = 2500/*300*/;
-    const TRAVEL_RZ = 500/*100*/;
-    const TRAVEL_TZ = 15/*15*/;
+    const SMOOTH_R = 0.001;
+    const TRAVEL_RXY = 2500;
+    const TRAVEL_RZ = 500;
     
     function imuRead(event)
     {
         const SMOOTH_TIME_R = 1 - Math.exp(-event.interval * SMOOTH_R);
-        const SMOOTH_TIME_T = 1 - Math.exp(-event.interval * SMOOTH_T);
         
         alphaAccelerometer += (event.rotationRate.alpha - alphaAccelerometer) * SMOOTH_TIME_R;
         betaAccelerometer += (event.rotationRate.beta - betaAccelerometer) * SMOOTH_TIME_R;
         gammaAccelerometer += (event.rotationRate.gamma - gammaAccelerometer) * SMOOTH_TIME_R;
-        zAccelerometer += (event.acceleration.z - zAccelerometer) * SMOOTH_TIME_T;
     }
     
     if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function")
@@ -99,27 +93,26 @@ function backgroundAnimation()
     {
         if (_orientationScreen === 1)
         {
-            _rxAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
-            _ryAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _rxAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
+            _ryAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 2)
         {
-            _rxAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
-            _ryAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _rxAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
+            _ryAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 3)
         {
-            _rxAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
-            _ryAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _rxAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
+            _ryAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 4)
         {
-            _rxAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
-            _ryAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _rxAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
+            _ryAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_R) * TRAVEL_RXY;
         }
         
-        _rzAccelerometer = -Math.tanh(gammaAccelerometer * SMOOTH_RT) * TRAVEL_RZ;
-        //_tzAccelerometer = Math.tanh(zAccelerometer * SMOOTH_RT) * TRAVEL_TZ;
+        _rzAccelerometer = ((-Math.tanh(gammaAccelerometer * SMOOTH_R) * TRAVEL_RZ) * Math.PI) / 180;
         
         requestAnimationFrame(updateAccelerometer);
     }
@@ -135,16 +128,16 @@ function particuleAnimation()
     let bufferPosition = null;
     let bufferDiameterGradient = null;
     let bufferColorAlpha = null;
-    let timeLast = 0;
+    let timePrevious = 0;
     let indexParticule = 0;
+    let index2 = 0;
+    let index4 = 0;
     let indexParticuleX = 0;
     let indexParticuleY = 0;
     let indexRed = 0;
     let indexGreen = 0;
     let indexBlue = 0;
     let indexAlpha = 0;
-    let scaleAlpha = 1;
-    let scaleBeta = 1;
     let mass = null;
     let proximity = null;
     let velocity = null;
@@ -161,51 +154,86 @@ function particuleAnimation()
     let yAttractorRandom = 0;
     let directionAttractorRandom = false;
     let shapeAttractor1 = null;
-    let numberAttractor = 1;
-    let stateAttractor = 1;
-    let timeState = 0;
-    let newRandomizeAttractor = 0;
-    let directionSpin = randomBinary(-1, 1);
-    let angleSpinStart = Math.PI * randomFloat(-1, 1);
-    let radiusSpin = 0;
-    let angleSpin = 0;
-    let weightSpin = 0;
+    //let numberAttractor = 1;
+    //let stateAttractor = 1;
+    //let timeState = 0;
+    //let newRandomizeAttractor = 0;
+    let directionSpinShape = randomBinary(-1, 1);
+    let angleSpinShapeStartShape = Math.PI * randomFloat(-1, 1);
+    let radiusSpinShape = 0;
+    let angleSpinShape = 0;
+    let weightSpinShape = 0;
     let xTouch = 0;
     let yTouch = 0;
     let xSmoothTouch = 0;
     let ySmoothTouch = 0;
-    let xsmoothJitterTouch = 0;
-    let ysmoothJitterTouch = 0;
+    let xSmoothJitterTouch = 0;
+    let ySmoothJitterTouch = 0;
     let activeTouchA = false;
     let activeTouchB = false;
-    //let xOffsetAttractorTouch = 0;
-    //let yOffsetAttractorTouch = 0;
-    //let xSmoothAttractorTouch = 0;
-    //let ySmoothAttractorTouch = 0;
-    //let xOffsetRingTouch = 1;
-    //let yOffsetRingTouch = 1;
-    //let xSmoothRingTouch = 1;
-    //let ySmoothRingTouch = 1;
     let timeTouch1 = 0;
     let timeTouch2 = 0;
     let timeAttractorRandom1 = 0;
     let timeAttractorRandom2 = 0;
+    
+    //EN COURS DE TRI
+    let xJitterTouch = 0;
+    let yJitterTouch = 0;
+    let widthRingTouch = 1;
+    let heightRingTouch = 1;
+    let widthSmoothRingTouch = 1;
+    let heightSmoothRingTouch = 1;
+    let xSmoothTouchPrevious = 0;
+    let ySmoothTouchPrevious = 0;
+    let smoothVelocityTouch = 0;
+    let vxSmooth = 0;
+    let vySmooth = 0;
+    let magnitudeSmooth = 0;
+    let magnitudeSmoothScale = 0;
+    let forceMassTime = 0;
+    let vx = 0;
+    let vy = 0;
+    let px = 0;
+    let py = 0;
+    let dx = 0;
+    let dy = 0;
+    let sx = 0;
+    let sy = 0;
+    let magnitude = 0;
+    let magnitudeScale = 0;
+    let force = 0;
+    let smoothTouch = 0;
+    let smoothJitterTouch = 0;
+    let smoothRingTouch = 0;
+    let damping = 0;
+    let xBlur = 0;
+    let yBlur = 0;
+    let xParallax = 0;
+    let yParallax = 0;
+    let cosParallax = 0;
+    let sinParallax = 0;
+    //EN COURS DE TRI
+    
+    const SAFE_SQRT = 0.000001;
     const COUNT_PARTICLE = 10000;
     const COUNT_PARTICLE_SHAPE = 7500;
-    const SIZE_X_SPIN = 1500;
-    const SIZE_Y_SPIN = 500;
-    const COUNT_SPIN = 4;
+    const SIZE_X_SPIN_SHAPE = 1500;
+    const SIZE_Y_SPIN_SHAPE = 500;
+    const COUNT_SPIN_SHAPE = 4;
     const BULB1_SPIN_SHAPE = 1;
     const BULB2_SPIN_SHAPE = 100;
     const FORCE_ATTRACTOR = 50;
-    const FORCE_ATTRACTOR_TOUCH = 200;
-    const FORCE_ATTRACTOR_RANDOM = 30;
+    //const FORCE_ATTRACTOR_TOUCH = 200;
+    const FORCE_ATTRACTOR_RANDOM = 50;
     const FORCE_TOUCH = 200;
     const RADIUS_TOUCH = 15;
     const RING_TOUCH = 10;
     const SMOOTH_TOUCH = 0.0001;
     const SMOOTH_JITTER_TOUCH = 0.001;
     const SMOOTH_RING_TOUCH = 0.0001;
+    const SMOOTH_VELOCITY_TOUCH = 0.1
+    const CLAMP_MAGNITUDE = 250;
+    const CLAMP_FORCE = 500;
     const DAMPING = 0.5;
     const VELOCITY_MIN = 10;
     const WIDTH_BLUR = 600;
@@ -224,9 +252,8 @@ function particuleAnimation()
         yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
-         
-        previous1 = xTouch;
-        previous2 = yTouch;
+        xSmoothTouchPrevious = xTouch;
+        ySmoothTouchPrevious = yTouch;
         
         activeTouchA = true;
         activeTouchB = true;
@@ -267,7 +294,77 @@ function particuleAnimation()
         activeTouchB = false;
     });
     
-   
+    _tagCanvas.addEventListener("pointerenter", () =>
+    {
+        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
+        
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        xSmoothTouch = xTouch;
+        ySmoothTouch = yTouch;
+        xSmoothTouchPrevious = xTouch;
+        ySmoothTouchPrevious = yTouch;
+        
+        activeTouchA = true;
+        
+        if (event.buttons & 1 === 1)
+        {
+            activeTouchB = true;
+        }
+    });
+    
+    _tagCanvas.addEventListener("pointerdown", event =>
+    {
+        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
+        
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        xSmoothTouch = xTouch;
+        ySmoothTouch = yTouch;
+        xSmoothTouchPrevious = xTouch;
+        ySmoothTouchPrevious = yTouch;
+        
+        activeTouchA = true;
+        activeTouchB = true;
+    });
+    
+    _tagCanvas.addEventListener("pointermove", event =>
+    {
+        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
+        
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        
+        activeTouchA = true;
+        
+        if (event.buttons & 1 === 1)
+        {
+            activeTouchB = true;
+        }
+    });
+    
+    _tagCanvas.addEventListener("pointerup", () =>
+    {
+        activeTouchB = false;
+    });
+    
+    _tagCanvas.addEventListener("pointerleave", () =>
+    {
+        activeTouchA = false;
+        activeTouchB = false;
+    });
+    
+    _tagCanvas.addEventListener("pointercancel", () =>
+    {
+        activeTouchA = false;
+        activeTouchB = false;
+    });
     
     function setupWebGL()
     {
@@ -275,7 +372,7 @@ function particuleAnimation()
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
-        _webGL.enable(_webGL.PROGRAM_POINT_SIZE);
+        //_webGL.enable(_webGL.PROGRAM_POINT_SIZE);
         
         vsSource = `
         attribute vec2 positionBuffer;
@@ -380,29 +477,36 @@ function particuleAnimation()
         _webGL.vertexAttribPointer(LOCATION, 4, _webGL.FLOAT, false, 0, 0);
     }
     
-    diameterGradient = new Float32Array(COUNT_PARTICLE * 2);
+    //INDEX
+    index2 = COUNT_PARTICLE * 2;
+    index4 = COUNT_PARTICLE * 4;
+    
+    diameterGradient = new Float32Array(index2);
     diameterStart = new Float32Array(COUNT_PARTICLE);
     gradientStart = new Float32Array(COUNT_PARTICLE);
-    colorAlpha = new Float32Array(COUNT_PARTICLE * 4);
+    colorAlpha = new Float32Array(index4);
     alphaStart = new Float32Array(COUNT_PARTICLE);
     mass = new Float32Array(COUNT_PARTICLE);
     proximity = new Float32Array(COUNT_PARTICLE);
-    velocity = new Float32Array(COUNT_PARTICLE * 2);
-    position = new Float32Array(COUNT_PARTICLE * 2);
-    positionRender = new Float32Array(COUNT_PARTICLE * 2);
-    shapeAttractor1 = new Float32Array(COUNT_PARTICLE * 2);
+    velocity = new Float32Array(index2);
+    position = new Float32Array(index2);
+    positionRender = new Float32Array(index2);
+    shapeAttractor1 = new Float32Array(index2);
     
     for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
     {
         //INDEX
-        indexParticuleX = indexParticule * 2;
-        indexParticuleY = (indexParticule * 2) + 1;
-        indexDiameter = indexParticule * 2;
-        indexGradient = (indexParticule * 2) + 1;
-        indexRed = indexParticule * 4;
-        indexGreen = (indexParticule * 4) + 1;
-        indexBlue = (indexParticule * 4) + 2;
-        indexAlpha = (indexParticule * 4) + 3;
+        index2 = indexParticule * 2;
+        index4 = indexParticule * 4;
+        
+        indexParticuleX = index2;
+        indexParticuleY = index2 + 1;
+        indexDiameter = index2;
+        indexGradient = index2 + 1;
+        indexRed = index4;
+        indexGreen = index4 + 1;
+        indexBlue = index4 + 2;
+        indexAlpha = index4 + 3;
         
         colorAlpha[indexRed] = 1;
         colorAlpha[indexGreen] = 1;
@@ -448,41 +552,44 @@ function particuleAnimation()
         }
         else
         {
-            radiusSpin = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
-            angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
-            weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+            radiusSpinShape = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
+            angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
+            weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
             
-            shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
-            shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
+            shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+            shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
         }
         /*
-        radiusSpin = indexParticule / COUNT_PARTICLE;
-        angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
-        weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+        radiusSpinShape = indexParticule / COUNT_PARTICLE;
+        angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
+        weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
         
-        shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
-        shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
+        shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+        shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
         */
         
-        //radiusSpin = indexParticule / COUNT_PARTICLE;
-        //angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
-        //weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+        //radiusSpinShape = indexParticule / COUNT_PARTICLE;
+        //angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
+        //weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
         
-        //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
-        //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
+        //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+        //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
     }
     
     for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
     {
         //INDEX
-        indexParticuleX = indexParticule * 2;
-        indexParticuleY = (indexParticule * 2) + 1;
-        indexDiameter = indexParticule * 2;
-        indexGradient = (indexParticule * 2) + 1;
-        indexRed = indexParticule * 4;
-        indexGreen = (indexParticule * 4) + 1;
-        indexBlue = (indexParticule * 4) + 2;
-        indexAlpha = (indexParticule * 4) + 3;
+        index2 = indexParticule * 2;
+        index4 = indexParticule * 4;
+        
+        indexParticuleX = index2;
+        indexParticuleY = index2 + 1;
+        indexDiameter = index2;
+        indexGradient = index2 + 1;
+        indexRed = index4;
+        indexGreen = index4 + 1;
+        indexBlue = index4 + 2;
+        indexAlpha = index4 + 3;
         
         diameterStart[indexParticule] = diameterGradient[indexDiameter];
         gradientStart[indexParticule] = diameterGradient[indexGradient];
@@ -498,22 +605,22 @@ function particuleAnimation()
         position[indexParticuleY] = yAttractor + randomFloat(-5, 5);
     }
     
-    function state()
+    /*function state()
     {
-        /*if (stateAttractor === 1)
+        if (stateAttractor === 1)
         {
             timeState = performance.now() + 500;
             numberAttractor = 1;
             newRandomizeAttractor = 1;
             
             stateAttractor = 1;
-        }*/
-    }
+        }
+    }*/
     
     function touch1()
     {
         xJitterTouch = randomFloat(-30, 30);
-        widthSmoothRingTouch = randomFloat(0.25, 4);
+        widthRingTouch = randomFloat(0.5, 2);
         
         timeTouch1 = performance.now() + randomInteger(50, 250);
     }
@@ -521,7 +628,7 @@ function particuleAnimation()
     function touch2()
     {
         yJitterTouch = randomFloat(-30, 30);
-        heightSmoothRingTouch = randomFloat(0.25, 4);
+        heightRingTouch = randomFloat(0.5, 2);
         
         timeTouch2 = performance.now() + randomInteger(50, 250);
     }
@@ -543,54 +650,22 @@ function particuleAnimation()
         timeAttractorRandom2 = performance.now() + randomInteger(100, 2000);
     }
     
-    timeLast = performance.now();
-    
-    //EN COURS !!!
-    let xJitterTouch = 0;
-    let yJitterTouch = 0;
-    let widthRingTouch = 1;
-    let heightRingTouch = 1;
-    let widthSmoothRingTouch = 1;
-    let heightSmoothRingTouch = 1;
-    let previous1 = 0;
-    let previous2 = 0;
-    let smoothVelocityTouch = 0;
-    let vxSmooth = 0;
-    let vySmooth = 0;
-    let vsqrt = 0;
-    let vsqrtSmooth = 0;
-    //EN COURS !!!
+    timePrevious = performance.now();
     
     function updateAnimation(time)
     {
-        const TIME_DELTA = Math.min((time - timeLast) * 0.001, 0.04);
         const H_SCALE = window.innerWidth * 0.5;
         const V_SCALE = window.innerHeight * 0.5;
         const DPR = window.devicePixelRatio || 1;
-        let px = 0;
-        let py = 0;
-        let dx = 0;
-        let dy = 0;
-        let d = 0;
-        let sx = 0;
-        let sy = 0;
-        let magnitude = 0;
-        let forceAttractorDistance = 0;
-        let strength = 0;
-        let smoothTouch = 0;
-        let smoothJitterTouch = 0;
-        let smoothRingTouch = 0;
-        let damping = 0;
-        let xBlur = 0;
-        let yBlur = 0;
+        const TIME_DELTA = Math.min((time - timePrevious) * 0.001, 0.04);
         
-        timeLast = time;
+        timePrevious = time;
         
         //STATE
-        if (performance.now() > timeState)
+        /*if (performance.now() > timeState)
         {
             state();
-        }
+        }*/
         
         //TOUCH
         if (performance.now() > timeTouch1)
@@ -619,33 +694,35 @@ function particuleAnimation()
         ySmoothTouch += (yTouch - ySmoothTouch) * smoothTouch;
         
         smoothJitterTouch = 1 - Math.pow(SMOOTH_JITTER_TOUCH, TIME_DELTA);
-        xsmoothJitterTouch += (xJitterTouch - xsmoothJitterTouch) * smoothJitterTouch;
-        ysmoothJitterTouch += (yJitterTouch - ysmoothJitterTouch) * smoothJitterTouch;
+        xSmoothJitterTouch += (xJitterTouch - xSmoothJitterTouch) * smoothJitterTouch;
+        ySmoothJitterTouch += (yJitterTouch - ySmoothJitterTouch) * smoothJitterTouch;
         
         smoothRingTouch = 1 - Math.pow(SMOOTH_RING_TOUCH, TIME_DELTA);
         widthSmoothRingTouch += (widthRingTouch - widthSmoothRingTouch) * smoothRingTouch;
         heightSmoothRingTouch += (heightRingTouch - heightSmoothRingTouch) * smoothRingTouch;
         
-        //EN COURS !!!
-        let vx = (xSmoothTouch - previous1);
-        previous1 = xSmoothTouch;
-        let vy = (ySmoothTouch - previous2);
-        previous2 = ySmoothTouch;
-        smoothVelocityTouch = 1 - Math.pow(0.1, TIME_DELTA);
+        vx = (xSmoothTouch - xSmoothTouchPrevious);
+        vy = (ySmoothTouch - ySmoothTouchPrevious);
+        
+        xSmoothTouchPrevious = xSmoothTouch;
+        ySmoothTouchPrevious = ySmoothTouch;
+        
+        smoothVelocityTouch = 1 - Math.pow(SMOOTH_VELOCITY_TOUCH, TIME_DELTA);
         vxSmooth += (vx - vxSmooth) * smoothVelocityTouch;
         vySmooth += (vy - vySmooth) * smoothVelocityTouch;
-        //console.log("vxSmooth = " + vxSmooth);
-        let vsqrt = 0.000001 + Math.sqrt((vx * vx) + (vy * vy));
-        smoothSqrt = 1 - Math.pow(0.5, TIME_DELTA);
-        vsqrtSmooth += (vsqrt - vsqrtSmooth) * smoothSqrt;
-        console.log("vsqrtSmooth = " + vsqrtSmooth);
-        //EN COURS !!!
         
-        if (newRandomizeAttractor === 1)
+        magnitude = SAFE_SQRT + Math.sqrt((vx * vx) + (vy * vy));
+        
+        magnitudeSmooth += (magnitude - magnitudeSmooth) * smoothVelocityTouch;
+        
+        cosParallax = Math.cos(_rzAccelerometer);
+        sinParallax = Math.sin(_rzAccelerometer);
+        
+        /*if (newRandomizeAttractor === 1)
         {
-            angleSpinStart -= 0.05 * directionSpin;
+            angleSpinShapeStartShape -= 0.05 * directionSpinShape;
             newRandomizeAttractor = 2;
-        }
+        }*/
         
         //ANIMATION
         for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
@@ -665,26 +742,26 @@ function particuleAnimation()
             py = position[indexParticuleY];
             
             //ATTRACTOR
-            if (newRandomizeAttractor === 2)
+            /*if (newRandomizeAttractor === 2)
             {
-                /*if (numberAttractor === 1)
-                {*/
-                    //radiusSpin = indexParticule / COUNT_PARTICLE;
-                    //angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
-                    //weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+                if (numberAttractor === 1)
+                {
+                    //radiusSpinShape = indexParticule / COUNT_PARTICLE;
+                    //angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
+                    //weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
                     
-                    //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
-                    //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
-                /*}
+                    //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+                    //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+                }
                 else if (numberAttractor === 2)
-                {*/
+                {
                     //shapeAttractor1[indexParticuleX] = randomFloat(-0.25, 0.25) + (randomFloat(0, 0.01) * randomBinary(-1, 1));
                     //shapeAttractor1[indexParticuleY] = randomFloat(-0.25, 0.25) + (randomFloat(0, 0.01) * randomBinary(-1, 1));
-                /*}
+                }
                 else if (numberAttractor === 3)
                 {
-                }*/
-            }
+                }
+            }*/
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
@@ -707,13 +784,15 @@ function particuleAnimation()
                 dx = (xAttractor - px);
                 dy = (yAttractor - py);
                 
-                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
+                magnitude = SAFE_SQRT + Math.sqrt((dx * dx) + (dy * dy));
                 
                 dx /= magnitude;
                 dy /= magnitude;
                 
-                velocity[indexParticuleX] += dx * (FORCE_ATTRACTOR / mass[indexParticule]) * TIME_DELTA;
-                velocity[indexParticuleY] += dy * (FORCE_ATTRACTOR / mass[indexParticule]) * TIME_DELTA;
+                forceMassTime = (FORCE_ATTRACTOR / mass[indexParticule]) * TIME_DELTA;
+                
+                velocity[indexParticuleX] += dx * forceMassTime;
+                velocity[indexParticuleY] += dy * forceMassTime;
             }
             else
             {
@@ -723,95 +802,77 @@ function particuleAnimation()
                 dx = xAttractor - px;
                 dy = yAttractor - py;
                 
-                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
+                magnitude = SAFE_SQRT + Math.sqrt((dx * dx) + (dy * dy));
                 
                 if (directionAttractorRandom === false)
                 {
-                    d = magnitude * 0.004;
+                    magnitudeScale = magnitude * 0.004;
                 }
                 else
                 {
-                    d = magnitude * 0.005;
+                    magnitudeScale = magnitude * 0.005;
                 }
                 
-                if (d < 2.2)
+                if (magnitudeScale < 2.2)
                 {
                     dx /= magnitude;
                     dy /= magnitude;
                     
-                    forceAttractorDistance = 50/*FORCE_ATTRACTOR_RANDOM*/ * (2 - d);
+                    force = FORCE_ATTRACTOR_RANDOM * (2 - magnitudeScale);
+                    
+                    forceMassTime = (force / mass[indexParticule]) * TIME_DELTA;
                     
                     if (directionAttractorRandom === false)
                     {
-                        velocity[indexParticuleX] += dx * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
-                        velocity[indexParticuleY] += dy * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                        velocity[indexParticuleX] += dx * forceMassTime;
+                        velocity[indexParticuleY] += dy * forceMassTime;
                     }
                     else
                     {
-                        velocity[indexParticuleX] -= dx * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
-                        velocity[indexParticuleY] -= dy * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                        velocity[indexParticuleX] -= dx * forceMassTime;
+                        velocity[indexParticuleY] -= dy * forceMassTime;
                     }
                 }
             }
             
             //TOUCH
-            if (activeTouchA === true && vsqrtSmooth > 0.1)
+            if (activeTouchA === true && magnitudeSmooth > 0.1)
             {
-                xAttractor = xSmoothTouch + xsmoothJitterTouch - _rxAccelerometer;
-                yAttractor = ySmoothTouch + ysmoothJitterTouch - _ryAccelerometer;
+                xAttractor = xSmoothTouch + xSmoothJitterTouch - _rxAccelerometer;
+                yAttractor = ySmoothTouch + ySmoothJitterTouch - _ryAccelerometer;
                 
                 dx = (xAttractor - px) * widthSmoothRingTouch;
                 dy = (yAttractor - py) * heightSmoothRingTouch;
                 
-                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
+                magnitude = SAFE_SQRT + Math.sqrt((dx * dx) + (dy * dy));
                 
-                let v1 = vsqrtSmooth * 20;
-                if (v1 > 250)
+                magnitudeSmoothScale = magnitudeSmooth * 15;
+                
+                if (magnitudeSmoothScale > CLAMP_MAGNITUDE)
                 {
-                    v1 = 250;
+                    magnitudeSmoothScale = CLAMP_MAGNITUDE;
                 }
-                if (magnitude < v1)
+                
+                if (magnitude < magnitudeSmoothScale)
                 {
                     dx /= magnitude;
                     dy /= magnitude;
                     
-                    //EN COURS !!!
-                    //let dot = ((dx * vxSmooth) + (dy * vySmooth)) * -500;
-                    let dot = ((dx * vxSmooth) + (dy * vySmooth)) * -1;
+                    force = magnitudeSmooth * ((magnitudeSmoothScale * 2) - magnitude);
                     
-                    forceAttractorDistance = vsqrtSmooth * ((v1 * 2) - magnitude);
-                    if (forceAttractorDistance > 500)
+                    if (force > CLAMP_FORCE)
                     {
-                        forceAttractorDistance = 500;
+                        force = CLAMP_FORCE;
                     }
                     
-                    //velocity[indexParticuleX] -= dx * /*(forceAttractorDistance / mass[indexParticule]) * */(dot / mass[indexParticule]) * TIME_DELTA;
-                    //velocity[indexParticuleY] -= dy * /*(forceAttractorDistance / mass[indexParticule]) * */(dot / mass[indexParticule]) * TIME_DELTA;
+                    force *= ((dx * vxSmooth) + (dy * vySmooth)) * -1;
                     
-                    velocity[indexParticuleX] -= dx * ((forceAttractorDistance * dot) / mass[indexParticule]) * TIME_DELTA;
-                    velocity[indexParticuleY] -= dy * ((forceAttractorDistance * dot) / mass[indexParticule]) * TIME_DELTA;
+                    forceMassTime = (force / mass[indexParticule]) * TIME_DELTA;
                     
-                    //velocity[indexParticuleX] -= dx * (dot / mass[indexParticule]) * TIME_DELTA;
-                    //velocity[indexParticuleY] -= dy * (dot / mass[indexParticule]) * TIME_DELTA;
+                    velocity[indexParticuleX] -= dx * forceMassTime;
+                    velocity[indexParticuleY] -= dy * forceMassTime;
                 }
             }
-            
-            //TOUCH
-            /*if (activeTouchA === true)
-            {
-                dx = xSmoothTouch - px;
-                dy = ySmoothTouch - py;
-                
-                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
-                
-                if (magnitude < RADIUS_TOUCH)
-                {
-                    strength = (RING_TOUCH - (magnitude / RADIUS_TOUCH)) * FORCE_TOUCH * TIME_DELTA;
-                    
-                    velocity[indexParticuleX] -= (dx / magnitude) * strength;
-                    velocity[indexParticuleY] -= (dy / magnitude) * strength;
-                }
-            }*/
             
             //DAMPING
             sx = velocity[indexParticuleX];
@@ -841,24 +902,18 @@ function particuleAnimation()
             position[indexParticuleX] += velocity[indexParticuleX] * TIME_DELTA;
             position[indexParticuleY] += velocity[indexParticuleY] * TIME_DELTA;
             
+            //PARALLAX
+            xParallax = position[indexParticuleX] + (_rxAccelerometer * proximity[indexParticule]);
+            yParallax = position[indexParticuleY] + (_ryAccelerometer * proximity[indexParticule]);
             
-            //RX RY RZ
-            const x = position[indexParticuleX] + (_rxAccelerometer * proximity[indexParticule]);
-            const y = position[indexParticuleY] + (_ryAccelerometer * proximity[indexParticule]);
-            const rzAccelerometerRad = (_rzAccelerometer * Math.PI) / 180;//_rzAccelerometer
-            const cosZ = Math.cos(rzAccelerometerRad);
-            const sinZ = Math.sin(rzAccelerometerRad);
-            
-            //positionRender[indexParticuleX] = (position[indexParticuleX] / H_SCALE) + (_rxAccelerometer * proximity[indexParticule]);
-            //positionRender[indexParticuleY] = (position[indexParticuleY] / V_SCALE) - (_ryAccelerometer * proximity[indexParticule]);
-            positionRender[indexParticuleX] = ((x * cosZ) - (y * sinZ)) / H_SCALE;
-            positionRender[indexParticuleY] = ((x * sinZ) + (y * cosZ)) / V_SCALE;
+            positionRender[indexParticuleX] = ((xParallax * cosParallax) - (yParallax * sinParallax)) / H_SCALE;
+            positionRender[indexParticuleY] = ((xParallax * sinParallax) + (yParallax * cosParallax)) / V_SCALE;
             
             //DIAMETER GRADIENT COLOR ALPHA
             /*xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
             yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
             
-            magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
             diameterGradient[indexDiameter] = diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude);
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
@@ -868,7 +923,7 @@ function particuleAnimation()
                 xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX] - (xSmoothTouch * H_SCALE), 100);
                 yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] - (ySmoothTouch * V_SCALE), 100);
                 
-                magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+                magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
                 
                 //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
                 colorAlpha[indexRed] = 1 - (0.2 * (1 - magnitude));
@@ -878,20 +933,20 @@ function particuleAnimation()
             xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
             yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
             
-            magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
             diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude)) * DPR;
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
             //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
-            //colorAlpha[indexGreen] = 1 - (0.1 * (1 - magnitude));
+            //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude);
         }
         
-        if (newRandomizeAttractor === 2)
+        /*if (newRandomizeAttractor === 2)
         {
             newRandomizeAttractor = 0;
-        }
+        }*/
         
         //DRAW
         _webGL.bindBuffer(_webGL.ARRAY_BUFFER, bufferPosition);
@@ -909,7 +964,7 @@ function particuleAnimation()
         requestAnimationFrame(updateAnimation);
     }
     
-    state();
+    //state();
     touch1();
     touch2();
     attractorRandom1();
@@ -926,17 +981,20 @@ function particuleAnimation()
 
 function windowResize()
 {
+    let hWindow = 0;
+    let vWindow = 0;
+    let dpr = 0;
+    
     function updateSize()
     {
-        const H_WINDOW = window.innerWidth;
-        const V_WINDOW = window.innerHeight;
-        const DPR = window.devicePixelRatio || 1;
-        //console.log("H_WINDOW = " + H_WINDOW);
-        //console.log("DPR = " + DPR);
-        _tagCanvas.width = Math.floor(H_WINDOW * DPR);
-        _tagCanvas.height = Math.floor(V_WINDOW * DPR);
-        _tagCanvas.style.width = H_WINDOW + "px";
-        _tagCanvas.style.height = V_WINDOW + "px";
+        hWindow = window.innerWidth;
+        vWindow = window.innerHeight;
+        dpr = window.devicePixelRatio || 1;
+        
+        _tagCanvas.width = Math.floor(hWindow * dpr);
+        _tagCanvas.height = Math.floor(vWindow * dpr);
+        _tagCanvas.style.width = hWindow + "px";
+        _tagCanvas.style.height = vWindow + "px";
         
         _webGL.viewport(0, 0, _tagCanvas.width, _tagCanvas.height);
     }
@@ -985,7 +1043,7 @@ function href(index)
 
 function loading()
 {
-    backgroundAnimation();
+    imu();
     particuleAnimation();
     
     windowResize();
