@@ -61,6 +61,7 @@ function backgroundAnimation()
     let alphaAccelerometer = 0;
     let betaAccelerometer = 0;
     let gammaAccelerometer = 0;
+    let zAccelerometer = 0;
     const SMOOTH_R = 0.001/*0.001*/;
     const SMOOTH_T = 0.008/*0.008*/;
     const SMOOTH_RT = 0.001/*0.004*/;
@@ -223,6 +224,9 @@ function particuleAnimation()
         yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
+         
+        previous1 = xTouch;
+        previous2 = yTouch;
         
         activeTouchA = true;
         activeTouchB = true;
@@ -263,73 +267,7 @@ function particuleAnimation()
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("pointerenter", () =>
-    {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
-        
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
-        xSmoothTouch = xTouch;
-        ySmoothTouch = yTouch;
-        
-        activeTouchA = true;
-        
-        if (event.buttons & 1 === 1)
-        {
-            activeTouchB = true;
-        }
-    });
-    
-    _tagCanvas.addEventListener("pointerdown", event =>
-    {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
-        
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
-        xSmoothTouch = xTouch;
-        ySmoothTouch = yTouch;
-        
-        activeTouchA = true;
-        activeTouchB = true;
-    });
-    
-    _tagCanvas.addEventListener("pointermove", event =>
-    {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
-        
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
-        
-        activeTouchA = true;
-        
-        if (event.buttons & 1 === 1)
-        {
-            activeTouchB = true;
-        }
-    });
-    
-    _tagCanvas.addEventListener("pointerup", () =>
-    {
-        activeTouchB = false;
-    });
-    
-    _tagCanvas.addEventListener("pointerleave", () =>
-    {
-        activeTouchA = false;
-        activeTouchB = false;
-    });
-    
-    _tagCanvas.addEventListener("pointercancel", () =>
-    {
-        activeTouchA = false;
-        activeTouchB = false;
-    });
+   
     
     function setupWebGL()
     {
