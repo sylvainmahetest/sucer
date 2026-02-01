@@ -3,8 +3,10 @@ customElements.define("tag-canvas", class extends HTMLElement{});
 let _tagCanvas = null;
 let _webGL = null;
 let _orientationScreen = 1;
-let _rxAccelerometerRaw = 0;
-let _ryAccelerometerRaw = 0;
+let _rxAccelerometer = 0;
+let _ryAccelerometer = 0;
+let _rzAccelerometer = 0;
+let _tzAccelerometer = 0;
 
 function randomBinary(a, b)
 {
@@ -59,9 +61,12 @@ function backgroundAnimation()
     let alphaAccelerometer = 0;
     let betaAccelerometer = 0;
     let gammaAccelerometer = 0;
-    let zAccelerometer = 0;
-    const SMOOTH_R = 0.001;
-    const SMOOTH_T = 0.008;
+    const SMOOTH_R = 0.001/*0.001*/;
+    const SMOOTH_T = 0.008/*0.008*/;
+    const SMOOTH_RT = 0.001/*0.004*/;
+    const TRAVEL_RXY = 2500/*300*/;
+    const TRAVEL_RZ = 500/*100*/;
+    const TRAVEL_TZ = 15/*15*/;
     
     function imuRead(event)
     {
@@ -89,69 +94,36 @@ function backgroundAnimation()
         window.addEventListener("devicemotion", imuRead);
     }
     
-    function updateTransform()
+    function updateAccelerometer()
     {
-        const H_WINDOW = window.innerWidth;
-        const V_WINDOW = window.innerHeight;
-        const SMOOTH = 0.004;
-        let rxAccelerometer = 0;
-        let ryAccelerometer = 0;
-        let rzAccelerometer = 0;
-        let tzAccelerometer = 0;
-        
         if (_orientationScreen === 1)
         {
-            rxAccelerometer = Math.tanh(betaAccelerometer * SMOOTH) * 0.6;
-            ryAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH) * 0.6;
+            _rxAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _ryAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 2)
         {
-            rxAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH) * 0.6;
-            ryAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH) * 0.6;
+            _rxAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _ryAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 3)
         {
-            rxAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH) * 0.6;
-            ryAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH) * 0.6;
+            _rxAccelerometer = Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _ryAccelerometer = Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
         }
         else if (_orientationScreen === 4)
         {
-            rxAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH) * 0.6;
-            ryAccelerometer = Math.tanh(betaAccelerometer * SMOOTH) * 0.6;
+            _rxAccelerometer = -Math.tanh(alphaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
+            _ryAccelerometer = -Math.tanh(betaAccelerometer * SMOOTH_RT) * TRAVEL_RXY;
         }
         
-        _rxAccelerometerRaw = rxAccelerometer;
-        _ryAccelerometerRaw = ryAccelerometer;
+        _rzAccelerometer = -Math.tanh(gammaAccelerometer * SMOOTH_RT) * TRAVEL_RZ;
+        //_tzAccelerometer = Math.tanh(zAccelerometer * SMOOTH_RT) * TRAVEL_TZ;
         
-        if (H_WINDOW < V_WINDOW)
-        {
-            rxAccelerometer *= H_WINDOW;
-            ryAccelerometer *= H_WINDOW;
-        }
-        else
-        {
-            rxAccelerometer *= V_WINDOW;
-            ryAccelerometer *= V_WINDOW;
-        }
-        
-        rzAccelerometer = Math.tanh(gammaAccelerometer * SMOOTH) * 125;
-        tzAccelerometer = 2 - Math.tanh(zAccelerometer * SMOOTH) * 15;
-        
-        if (tzAccelerometer < 1)
-        {
-            tzAccelerometer = 1;
-        }
-        else if (tzAccelerometer > 4)
-        {
-            tzAccelerometer = 4;
-        }
-        
-        _tagCanvas.style.transform = "translate(" + rxAccelerometer + "px, " + ryAccelerometer + "px) rotate(" + rzAccelerometer + "deg) scale(" + tzAccelerometer + ")";
-        
-        requestAnimationFrame(updateTransform);
+        requestAnimationFrame(updateAccelerometer);
     }
     
-    requestAnimationFrame(updateTransform);
+    requestAnimationFrame(updateAccelerometer);
 }
 
 function particuleAnimation()
@@ -163,8 +135,6 @@ function particuleAnimation()
     let bufferDiameterGradient = null;
     let bufferColorAlpha = null;
     let timeLast = 0;
-    let hWindow = window.innerWidth;
-    let vWindow = window.innerHeight;
     let indexParticule = 0;
     let indexParticuleX = 0;
     let indexParticuleY = 0;
@@ -177,8 +147,6 @@ function particuleAnimation()
     let mass = null;
     let proximity = null;
     let velocity = null;
-    let wall = null;
-    let bounce = null;
     let position = null;
     let positionRender = null;
     let diameterGradient = null;
@@ -186,6 +154,11 @@ function particuleAnimation()
     let gradientStart = null;
     let colorAlpha = null;
     let alphaStart = null;
+    let xAttractor = 0;
+    let yAttractor = 0;
+    let xAttractorRandom = 0;
+    let yAttractorRandom = 0;
+    let directionAttractorRandom = false;
     let shapeAttractor1 = null;
     let numberAttractor = 1;
     let stateAttractor = 1;
@@ -196,54 +169,58 @@ function particuleAnimation()
     let radiusSpin = 0;
     let angleSpin = 0;
     let weightSpin = 0;
-    let xAttractor = 0;
-    let yAttractor = 0;
     let xTouch = 0;
     let yTouch = 0;
     let xSmoothTouch = 0;
     let ySmoothTouch = 0;
+    let xsmoothJitterTouch = 0;
+    let ysmoothJitterTouch = 0;
     let activeTouchA = false;
     let activeTouchB = false;
-    let xOffsetAttractorTouch = 0;
-    let yOffsetAttractorTouch = 0;
+    //let xOffsetAttractorTouch = 0;
+    //let yOffsetAttractorTouch = 0;
     //let xSmoothAttractorTouch = 0;
     //let ySmoothAttractorTouch = 0;
-    let xOffsetRingTouch = 1;
-    let yOffsetRingTouch = 1;
-    let xSmoothRingTouch = 1;
-    let ySmoothRingTouch = 1;
+    //let xOffsetRingTouch = 1;
+    //let yOffsetRingTouch = 1;
+    //let xSmoothRingTouch = 1;
+    //let ySmoothRingTouch = 1;
     let timeTouch1 = 0;
     let timeTouch2 = 0;
-    const COUNT_PARTICLE = 5000;
-    const SIZE_X_SPIN = 1;
-    const SIZE_Y_SPIN = 0.7;
+    let timeAttractorRandom1 = 0;
+    let timeAttractorRandom2 = 0;
+    const COUNT_PARTICLE = 10000;
+    const COUNT_PARTICLE_SHAPE = 7500;
+    const SIZE_X_SPIN = 1500;
+    const SIZE_Y_SPIN = 500;
     const COUNT_SPIN = 4;
-    const BULB1_SPIN_SHAPE = 5;
-    const BULB2_SPIN_SHAPE = 0.5;
-    const FORCE_ATTRACTOR = 0.05;
-    const FORCE_ATTRACTOR_TOUCH = 0.5;
-    const FORCE_TOUCH = 30;
-    const RADIUS_TOUCH = 0.04/*0.04*/;
-    const RING_TOUCH = 1;
-    const SMOOTH_TOUCH = 0.02;
-    //const SMOOTH_ATTRACTOR_TOUCH = 0.5;
-    const SMOOTH_RING_TOUCH = 0.85;
+    const BULB1_SPIN_SHAPE = 1;
+    const BULB2_SPIN_SHAPE = 100;
+    const FORCE_ATTRACTOR = 50;
+    const FORCE_ATTRACTOR_TOUCH = 200;
+    const FORCE_ATTRACTOR_RANDOM = 30;
+    const FORCE_TOUCH = 200;
+    const RADIUS_TOUCH = 15;
+    const RING_TOUCH = 10;
+    const SMOOTH_TOUCH = 0.0001;
+    const SMOOTH_JITTER_TOUCH = 0.001;
+    const SMOOTH_RING_TOUCH = 0.0001;
     const DAMPING = 0.5;
-    const CLAMP = 1;
-    const BOUNCE = 0.05;
-    const VELOCITY_MIN = 0.01;
-    const WIDTH_BLUR = 1;
-    const HEIGHT_BLUR = 0.6;
-    const Y_OFFSET_BLUR = 0.15;
+    const VELOCITY_MIN = 10;
+    const WIDTH_BLUR = 600;
+    const HEIGHT_BLUR = 800;
+    const Y_OFFSET_BLUR = 150;
     
     _tagCanvas = document.getElementById("tag-canvas");
     
     _tagCanvas.addEventListener("touchstart", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
         
-        xTouch = (((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1;
-        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1);
+        xTouch = ((((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         
@@ -259,9 +236,11 @@ function particuleAnimation()
     _tagCanvas.addEventListener("touchmove", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
         
-        xTouch = (((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1;
-        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1);
+        xTouch = ((((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         
         activeTouchA = true;
         activeTouchB = true;
@@ -287,9 +266,11 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointerenter", () =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
         
-        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1);
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         
@@ -304,9 +285,11 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointerdown", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
         
-        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1);
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         
@@ -317,9 +300,11 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointermove", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
         
-        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1);
+        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
+        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
         
         activeTouchA = true;
         
@@ -465,8 +450,6 @@ function particuleAnimation()
     mass = new Float32Array(COUNT_PARTICLE);
     proximity = new Float32Array(COUNT_PARTICLE);
     velocity = new Float32Array(COUNT_PARTICLE * 2);
-    wall = new Float32Array(COUNT_PARTICLE * 2);
-    bounce = new Float32Array(COUNT_PARTICLE);
     position = new Float32Array(COUNT_PARTICLE * 2);
     positionRender = new Float32Array(COUNT_PARTICLE * 2);
     shapeAttractor1 = new Float32Array(COUNT_PARTICLE * 2);
@@ -487,43 +470,61 @@ function particuleAnimation()
         colorAlpha[indexGreen] = 1;
         colorAlpha[indexBlue] = 1;
         
-        const DPR = window.devicePixelRatio || 1;
-        
-        if (randomInteger(1, 3) === 1)
+        if (randomInteger(1, 50) === 1)
         {
-            diameterGradient[indexDiameter] = randomFloat(2, 4) * DPR;
-            diameterGradient[indexGradient] = 0.49;
-            colorAlpha[indexAlpha] = 0.1;
+            diameterGradient[indexDiameter] = randomFloat(2, 3);
+            diameterGradient[indexGradient] = 0.25;
+            colorAlpha[indexAlpha] = 0.075;
             mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 2);
+            proximity[indexParticule] = randomFloat(1, 1.5);
         }
-        else if (randomInteger(1, 10) !== 1)
+        else if (randomInteger(1, 10) === 1)
         {
-            diameterGradient[indexDiameter] = randomFloat(10, 15) * DPR;
-            diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.01;
-            mass[indexParticule] = randomFloat(1.1, 1.3);
-            proximity[indexParticule] = randomFloat(1, 2);
+            diameterGradient[indexDiameter] = randomFloat(5, 8);
+            diameterGradient[indexGradient] = 0.15;
+            colorAlpha[indexAlpha] = 0.05;
+            mass[indexParticule] = randomFloat(1, 1.1);
+            proximity[indexParticule] = randomFloat(1, 1.5);
         }
-        else if (randomInteger(1, 10) !== 1)
+        else if (randomInteger(1, 20) !== 1)
         {
-            diameterGradient[indexDiameter] = randomFloat(15, 40) * DPR;
+            diameterGradient[indexDiameter] = randomFloat(15, 20);
             diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.01;
-            mass[indexParticule] = randomFloat(1.3, 1.8);
-            proximity[indexParticule] = randomFloat(1.5, 3);
+            colorAlpha[indexAlpha] = 0.005;
+            mass[indexParticule] = randomFloat(1.1, 2);
+            proximity[indexParticule] = randomFloat(1.5, 2);
         }
         else
         {
-            diameterGradient[indexDiameter] = randomFloat(40, 70) * DPR;
+            diameterGradient[indexDiameter] = randomFloat(40, 70);
             diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.02;
-            mass[indexParticule] = randomFloat(1.8, 5);
-            proximity[indexParticule] = randomFloat(2, 3.5);
+            colorAlpha[indexAlpha] = 0.005;
+            mass[indexParticule] = randomFloat(2, 3);
+            proximity[indexParticule] = randomFloat(2, 3);
         }
         
-        shapeAttractor1[indexParticuleX] = randomFloat(-0.2, 0.2)/* + (randomFloat(0, 0.01) * randomBinary(-1, 1))*/;
-        shapeAttractor1[indexParticuleY] = randomFloat(-0.2, 0.2)/* + (randomFloat(0, 0.01) * randomBinary(-1, 1))*/;
+        if (indexParticule < COUNT_PARTICLE_SHAPE)
+        {
+            shapeAttractor1[indexParticuleX] = randomFloat(-150, 150);
+            shapeAttractor1[indexParticuleY] = randomFloat(-150, 150);
+        }
+        else
+        {
+            radiusSpin = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
+            angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
+            weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+            
+            shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
+            shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
+        }
+        /*
+        radiusSpin = indexParticule / COUNT_PARTICLE;
+        angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
+        weightSpin = (1 / Math.exp(radiusSpin * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+        
+        shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
+        shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
+        */
         
         //radiusSpin = indexParticule / COUNT_PARTICLE;
         //angleSpin = angleSpinStart + directionSpin * radiusSpin * COUNT_SPIN * Math.PI * 2;
@@ -531,15 +532,6 @@ function particuleAnimation()
         
         //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpin) * radiusSpin * SIZE_X_SPIN) + randomFloat(-weightSpin, weightSpin);
         //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpin) * radiusSpin * SIZE_Y_SPIN) + randomFloat(-weightSpin, weightSpin);
-    }
-    
-    if (hWindow < vWindow)
-    {
-        scaleAlpha = hWindow / vWindow;
-    }
-    else
-    {
-        scaleBeta = vWindow / hWindow;
     }
     
     for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
@@ -558,16 +550,14 @@ function particuleAnimation()
         gradientStart[indexParticule] = diameterGradient[indexGradient];
         alphaStart[indexParticule] = colorAlpha[indexAlpha];
         
-        velocity[indexParticuleX] = VELOCITY_MIN * randomBinary(-1, 1) * scaleBeta;
-        velocity[indexParticuleY] = VELOCITY_MIN * randomBinary(-1, 1) * scaleAlpha;
+        velocity[indexParticuleX] = VELOCITY_MIN * randomBinary(-1, 1);
+        velocity[indexParticuleY] = VELOCITY_MIN * randomBinary(-1, 1);
         
-        wall[indexParticuleX] = randomFloat(1, 1.2);
-        wall[indexParticuleY] = randomFloat(1, 1.2);
+        xAttractor = shapeAttractor1[indexParticuleX];
+        yAttractor = shapeAttractor1[indexParticuleY];
         
-        bounce[indexParticule] = randomFloat(BOUNCE, BOUNCE * 2);
-        
-        position[indexParticuleX] = (shapeAttractor1[indexParticuleX] + randomFloat(-0.005, 0.005)) * scaleBeta;
-        position[indexParticuleY] = (shapeAttractor1[indexParticuleY] + randomFloat(-0.005, 0.005)) * scaleAlpha;
+        position[indexParticuleX] = xAttractor + randomFloat(-5, 5);
+        position[indexParticuleY] = yAttractor + randomFloat(-5, 5);
     }
     
     function state()
@@ -584,23 +574,61 @@ function particuleAnimation()
     
     function touch1()
     {
-        xOffsetAttractorTouch = randomFloat(-0.06, 0.06);
-        xOffsetRingTouch = randomFloat(0.8, 1.25);
-        timeTouch1 = performance.now() + randomInteger(250, 2000);
+        xJitterTouch = randomFloat(-30, 30);
+        widthSmoothRingTouch = randomFloat(0.25, 4);
+        
+        timeTouch1 = performance.now() + randomInteger(50, 250);
     }
     
     function touch2()
     {
-        yOffsetAttractorTouch = randomFloat(-0.06, 0.06);
-        yOffsetRingTouch = randomFloat(0.8, 1.25);
-        timeTouch2 = performance.now() + randomInteger(250, 2000);
+        yJitterTouch = randomFloat(-30, 30);
+        heightSmoothRingTouch = randomFloat(0.25, 4);
+        
+        timeTouch2 = performance.now() + randomInteger(50, 250);
+    }
+    
+    function attractorRandom1()
+    {
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
+        
+        xAttractorRandom = randomFloat(-H_SCALE, H_SCALE);
+        yAttractorRandom = randomFloat(-V_SCALE, V_SCALE);
+        
+        timeAttractorRandom1 = performance.now() + randomInteger(100, 2000);
+    }
+    
+    function attractorRandom2()
+    {
+        directionAttractorRandom = randomBinary(false, true);
+        timeAttractorRandom2 = performance.now() + randomInteger(100, 2000);
     }
     
     timeLast = performance.now();
     
+    //EN COURS !!!
+    let xJitterTouch = 0;
+    let yJitterTouch = 0;
+    let widthRingTouch = 1;
+    let heightRingTouch = 1;
+    let widthSmoothRingTouch = 1;
+    let heightSmoothRingTouch = 1;
+    let previous1 = 0;
+    let previous2 = 0;
+    let smoothVelocityTouch = 0;
+    let vxSmooth = 0;
+    let vySmooth = 0;
+    let vsqrt = 0;
+    let vsqrtSmooth = 0;
+    //EN COURS !!!
+    
     function updateAnimation(time)
     {
-        const TIME_DELTA = Math.min((time - timeLast) * 0.001, 0.05);
+        const TIME_DELTA = Math.min((time - timeLast) * 0.001, 0.04);
+        const H_SCALE = window.innerWidth * 0.5;
+        const V_SCALE = window.innerHeight * 0.5;
+        const DPR = window.devicePixelRatio || 1;
         let px = 0;
         let py = 0;
         let dx = 0;
@@ -609,31 +637,16 @@ function particuleAnimation()
         let sx = 0;
         let sy = 0;
         let magnitude = 0;
-        let radiusTouch = 0;
         let forceAttractorDistance = 0;
         let strength = 0;
-        let smoothTouch = 1;
-        //let smoothAttractorTouch = 1;
-        let smoothRingTouch = 1;
+        let smoothTouch = 0;
+        let smoothJitterTouch = 0;
+        let smoothRingTouch = 0;
         let damping = 0;
         let xBlur = 0;
         let yBlur = 0;
         
         timeLast = time;
-        
-        hWindow = window.innerWidth;
-        vWindow = window.innerHeight;
-        
-        if (hWindow < vWindow)
-        {
-            scaleAlpha = hWindow / vWindow;
-            scaleBeta = 1;
-        }
-        else
-        {
-            scaleAlpha = 1;
-            scaleBeta = vWindow / hWindow;
-        }
         
         //STATE
         if (performance.now() > timeState)
@@ -652,17 +665,43 @@ function particuleAnimation()
             touch2();
         }
         
+        //ATTRACTOR
+        if (performance.now() > timeAttractorRandom1)
+        {
+            attractorRandom1();
+        }
+        
+        if (performance.now() > timeAttractorRandom2)
+        {
+            attractorRandom2();
+        }
+        
         smoothTouch = 1 - Math.pow(SMOOTH_TOUCH, TIME_DELTA);
         xSmoothTouch += (xTouch - xSmoothTouch) * smoothTouch;
         ySmoothTouch += (yTouch - ySmoothTouch) * smoothTouch;
         
-        //smoothAttractorTouch = 1 - Math.pow(SMOOTH_ATTRACTOR_TOUCH, TIME_DELTA);
-        //xSmoothAttractorTouch += (xOffsetAttractorTouch - xSmoothAttractorTouch) * smoothAttractorTouch;
-        //ySmoothAttractorTouch += (yOffsetAttractorTouch - ySmoothAttractorTouch) * smoothAttractorTouch;
+        smoothJitterTouch = 1 - Math.pow(SMOOTH_JITTER_TOUCH, TIME_DELTA);
+        xsmoothJitterTouch += (xJitterTouch - xsmoothJitterTouch) * smoothJitterTouch;
+        ysmoothJitterTouch += (yJitterTouch - ysmoothJitterTouch) * smoothJitterTouch;
         
         smoothRingTouch = 1 - Math.pow(SMOOTH_RING_TOUCH, TIME_DELTA);
-        xSmoothRingTouch += (xOffsetRingTouch - xSmoothRingTouch) * smoothRingTouch;
-        ySmoothRingTouch += (yOffsetRingTouch - ySmoothRingTouch) * smoothRingTouch;
+        widthSmoothRingTouch += (widthRingTouch - widthSmoothRingTouch) * smoothRingTouch;
+        heightSmoothRingTouch += (heightRingTouch - heightSmoothRingTouch) * smoothRingTouch;
+        
+        //EN COURS !!!
+        let vx = (xSmoothTouch - previous1);
+        previous1 = xSmoothTouch;
+        let vy = (ySmoothTouch - previous2);
+        previous2 = ySmoothTouch;
+        smoothVelocityTouch = 1 - Math.pow(0.1, TIME_DELTA);
+        vxSmooth += (vx - vxSmooth) * smoothVelocityTouch;
+        vySmooth += (vy - vySmooth) * smoothVelocityTouch;
+        //console.log("vxSmooth = " + vxSmooth);
+        let vsqrt = 0.000001 + Math.sqrt((vx * vx) + (vy * vy));
+        smoothSqrt = 1 - Math.pow(0.5, TIME_DELTA);
+        vsqrtSmooth += (vsqrt - vsqrtSmooth) * smoothSqrt;
+        console.log("vsqrtSmooth = " + vsqrtSmooth);
+        //EN COURS !!!
         
         if (newRandomizeAttractor === 1)
         {
@@ -709,77 +748,132 @@ function particuleAnimation()
                 }*/
             }
             
-            if (activeTouchA === true && activeTouchB === true)
-            {
-                xAttractor = xSmoothTouch + (xOffsetAttractorTouch * scaleBeta);
-                yAttractor = ySmoothTouch + (yOffsetAttractorTouch * scaleAlpha);
-                
-                dx = (xAttractor - px) * scaleAlpha;
-                dy = (yAttractor - py) * scaleBeta;
-                
-                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
-                
-                d = magnitude * 3;
-                
-                if (d < 1.2)
-                {
-                    dx /= magnitude * scaleAlpha;
-                    dy /= magnitude * scaleBeta;
-                    
-                    forceAttractorDistance = FORCE_ATTRACTOR_TOUCH * (1 - d);
-                    
-                    velocity[indexParticuleX] += dx * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
-                    velocity[indexParticuleY] += dy * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
-                }
-            }
-            else
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
                 /*if (numberAttractor === 1)
                 {*/
-                    xAttractor = shapeAttractor1[indexParticuleX] * scaleBeta;
-                    yAttractor = shapeAttractor1[indexParticuleY] * scaleAlpha;
+                    xAttractor = shapeAttractor1[indexParticuleX];
+                    yAttractor = shapeAttractor1[indexParticuleY];
                 /*}
                 else if (numberAttractor === 2)
                 {
-                    xAttractor = shapeAttractor2[indexParticuleX] * scaleBeta;
-                    yAttractor = shapeAttractor2[indexParticuleY] * scaleAlpha;
+                    xAttractor = shapeAttractor2[indexParticuleX];
+                    yAttractor = shapeAttractor2[indexParticuleY];
                 }
                 else if (numberAttractor === 3)
                 {
-                    xAttractor = shapeAttractor3[indexParticuleX] * scaleBeta;
-                    yAttractor = shapeAttractor3[indexParticuleY] * scaleAlpha;
+                    xAttractor = shapeAttractor3[indexParticuleX];
+                    yAttractor = shapeAttractor3[indexParticuleY];
                 }*/
                 
-                dx = (xAttractor - px) * scaleAlpha;
-                dy = (yAttractor - py) * scaleBeta;
+                dx = (xAttractor - px);
+                dy = (yAttractor - py);
                 
                 magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
                 
-                dx /= magnitude * scaleAlpha;
-                dy /= magnitude * scaleBeta;
+                dx /= magnitude;
+                dy /= magnitude;
                 
                 velocity[indexParticuleX] += dx * (FORCE_ATTRACTOR / mass[indexParticule]) * TIME_DELTA;
                 velocity[indexParticuleY] += dy * (FORCE_ATTRACTOR / mass[indexParticule]) * TIME_DELTA;
             }
-            
-            //TOUCH
-            if (activeTouchA === true)
+            else
             {
-                dx = (xSmoothTouch - px) * xSmoothRingTouch * scaleAlpha;
-                dy = (ySmoothTouch - py) * ySmoothRingTouch * scaleBeta;
+                xAttractor = xAttractorRandom;
+                yAttractor = yAttractorRandom;
+                
+                dx = xAttractor - px;
+                dy = yAttractor - py;
                 
                 magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
                 
-                radiusTouch = RADIUS_TOUCH * scaleAlpha * scaleBeta;
-                
-                if (magnitude < radiusTouch)
+                if (directionAttractorRandom === false)
                 {
-                    strength = (RING_TOUCH - (magnitude / radiusTouch)) * FORCE_TOUCH * TIME_DELTA;
+                    d = magnitude * 0.004;
+                }
+                else
+                {
+                    d = magnitude * 0.005;
+                }
+                
+                if (d < 2.2)
+                {
+                    dx /= magnitude;
+                    dy /= magnitude;
+                    
+                    forceAttractorDistance = 50/*FORCE_ATTRACTOR_RANDOM*/ * (2 - d);
+                    
+                    if (directionAttractorRandom === false)
+                    {
+                        velocity[indexParticuleX] += dx * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                        velocity[indexParticuleY] += dy * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                    }
+                    else
+                    {
+                        velocity[indexParticuleX] -= dx * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                        velocity[indexParticuleY] -= dy * (forceAttractorDistance / mass[indexParticule]) * TIME_DELTA;
+                    }
+                }
+            }
+            
+            //TOUCH
+            if (activeTouchA === true && vsqrtSmooth > 0.1)
+            {
+                xAttractor = xSmoothTouch + xsmoothJitterTouch - _rxAccelerometer;
+                yAttractor = ySmoothTouch + ysmoothJitterTouch - _ryAccelerometer;
+                
+                dx = (xAttractor - px) * widthSmoothRingTouch;
+                dy = (yAttractor - py) * heightSmoothRingTouch;
+                
+                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
+                
+                let v1 = vsqrtSmooth * 20;
+                if (v1 > 250)
+                {
+                    v1 = 250;
+                }
+                if (magnitude < v1)
+                {
+                    dx /= magnitude;
+                    dy /= magnitude;
+                    
+                    //EN COURS !!!
+                    //let dot = ((dx * vxSmooth) + (dy * vySmooth)) * -500;
+                    let dot = ((dx * vxSmooth) + (dy * vySmooth)) * -1;
+                    
+                    forceAttractorDistance = vsqrtSmooth * ((v1 * 2) - magnitude);
+                    if (forceAttractorDistance > 500)
+                    {
+                        forceAttractorDistance = 500;
+                    }
+                    
+                    //velocity[indexParticuleX] -= dx * /*(forceAttractorDistance / mass[indexParticule]) * */(dot / mass[indexParticule]) * TIME_DELTA;
+                    //velocity[indexParticuleY] -= dy * /*(forceAttractorDistance / mass[indexParticule]) * */(dot / mass[indexParticule]) * TIME_DELTA;
+                    
+                    velocity[indexParticuleX] -= dx * ((forceAttractorDistance * dot) / mass[indexParticule]) * TIME_DELTA;
+                    velocity[indexParticuleY] -= dy * ((forceAttractorDistance * dot) / mass[indexParticule]) * TIME_DELTA;
+                    
+                    //velocity[indexParticuleX] -= dx * (dot / mass[indexParticule]) * TIME_DELTA;
+                    //velocity[indexParticuleY] -= dy * (dot / mass[indexParticule]) * TIME_DELTA;
+                }
+            }
+            
+            //TOUCH
+            /*if (activeTouchA === true)
+            {
+                dx = xSmoothTouch - px;
+                dy = ySmoothTouch - py;
+                
+                magnitude = 0.000001 + Math.sqrt((dx * dx) + (dy * dy));
+                
+                if (magnitude < RADIUS_TOUCH)
+                {
+                    strength = (RING_TOUCH - (magnitude / RADIUS_TOUCH)) * FORCE_TOUCH * TIME_DELTA;
                     
                     velocity[indexParticuleX] -= (dx / magnitude) * strength;
                     velocity[indexParticuleY] -= (dy / magnitude) * strength;
                 }
-            }
+            }*/
             
             //DAMPING
             sx = velocity[indexParticuleX];
@@ -787,79 +881,73 @@ function particuleAnimation()
             
             damping = Math.pow(DAMPING, TIME_DELTA);
             
-            if (sx < -VELOCITY_MIN * scaleBeta)
+            if (sx < -VELOCITY_MIN)
             {
                 velocity[indexParticuleX] *= damping;
             }
-            else if (sx > VELOCITY_MIN * scaleBeta)
+            else if (sx > VELOCITY_MIN)
             {
                 velocity[indexParticuleX] *= damping;
             }
             
-            if (sy < -VELOCITY_MIN * scaleAlpha)
+            if (sy < -VELOCITY_MIN)
             {
                 velocity[indexParticuleY] *= damping;
             }
-            else if (sy > VELOCITY_MIN * scaleAlpha)
+            else if (sy > VELOCITY_MIN)
             {
                 velocity[indexParticuleY] *= damping;
-            }
-            
-            //CLAMP
-            sx = velocity[indexParticuleX] / scaleBeta;
-            sy = velocity[indexParticuleY] / scaleAlpha;
-            
-            magnitude = 0.000001 + Math.sqrt((sx * sx) + (sy * sy));
-            
-            if (magnitude > CLAMP)
-            {
-                strength = CLAMP / magnitude;
-                
-                velocity[indexParticuleX] = sx * strength * scaleBeta;
-                velocity[indexParticuleY] = sy * strength * scaleAlpha;
-            }
-            
-            //BOUNCE
-            if (px < -wall[indexParticuleX])
-            {
-                velocity[indexParticuleX] = bounce[indexParticule];
-            }
-            else if (px > wall[indexParticuleX])
-            {
-                velocity[indexParticuleX] = -bounce[indexParticule];
-            }
-            
-            if (py < -wall[indexParticuleY])
-            {
-                velocity[indexParticuleY] = bounce[indexParticule];
-            }
-            else if (py > wall[indexParticuleY])
-            {
-                velocity[indexParticuleY] = -bounce[indexParticule];
             }
             
             //UPDATE
             position[indexParticuleX] += velocity[indexParticuleX] * TIME_DELTA;
             position[indexParticuleY] += velocity[indexParticuleY] * TIME_DELTA;
-            positionRender[indexParticuleX] = position[indexParticuleX] + _rxAccelerometerRaw * proximity[indexParticule];
-            positionRender[indexParticuleY] = position[indexParticuleY] - _ryAccelerometerRaw * proximity[indexParticule];
+            
+            
+            //RX RY RZ
+            const x = position[indexParticuleX] + (_rxAccelerometer * proximity[indexParticule]);
+            const y = position[indexParticuleY] + (_ryAccelerometer * proximity[indexParticule]);
+            const rzAccelerometerRad = (_rzAccelerometer * Math.PI) / 180;//_rzAccelerometer
+            const cosZ = Math.cos(rzAccelerometerRad);
+            const sinZ = Math.sin(rzAccelerometerRad);
+            
+            //positionRender[indexParticuleX] = (position[indexParticuleX] / H_SCALE) + (_rxAccelerometer * proximity[indexParticule]);
+            //positionRender[indexParticuleY] = (position[indexParticuleY] / V_SCALE) - (_ryAccelerometer * proximity[indexParticule]);
+            positionRender[indexParticuleX] = ((x * cosZ) - (y * sinZ)) / H_SCALE;
+            positionRender[indexParticuleY] = ((x * sinZ) + (y * cosZ)) / V_SCALE;
             
             //DIAMETER GRADIENT COLOR ALPHA
-            xBlur = clampPositiveSymmetricalMinMax(positionRender[indexParticuleX] * scaleAlpha, WIDTH_BLUR);
-            yBlur = clampPositiveSymmetricalMinMax(positionRender[indexParticuleY] + Y_OFFSET_BLUR * scaleBeta, HEIGHT_BLUR);
+            /*xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
+            yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
             
             magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
             diameterGradient[indexDiameter] = diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude);
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
-            //colorAlpha[indexRed] = Math.round(255 - (255 * 0.8 * magnitude));
-            //colorAlpha[indexGreen] = Math.round(255 - (255 * 0.2 * (1 - magnitude)));
-            //colorAlpha[indexAlpha] = Math.round(alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.8 * magnitude));
+            if (activeTouchA === true)
+            {
+                xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX] - (xSmoothTouch * H_SCALE), 100);
+                yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] - (ySmoothTouch * V_SCALE), 100);
+                
+                magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+                
+                //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
+                colorAlpha[indexRed] = 1 - (0.2 * (1 - magnitude));
+                //colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.8 * magnitude);
+            }*/
             
-            colorAlpha[indexRed] = 1 - (0.2 * magnitude);
-            //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
-            colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.8 * magnitude);
+            xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
+            yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
+            
+            magnitude = Math.min(0.000001 + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+            
+            diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude)) * DPR;
+            diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
+            
+            //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
+            //colorAlpha[indexGreen] = 1 - (0.1 * (1 - magnitude));
+            colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude);
         }
         
         if (newRandomizeAttractor === 2)
@@ -886,12 +974,15 @@ function particuleAnimation()
     state();
     touch1();
     touch2();
+    attractorRandom1();
+    attractorRandom2();
     
     setupWebGL();
     program = startProgram(vsSource, fsSource);
     startBufferPosition();
     startBufferDiameterGradient();
     startBufferColorAlpha();
+    
     requestAnimationFrame(updateAnimation);
 }
 
@@ -902,9 +993,10 @@ function windowResize()
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         const DPR = window.devicePixelRatio || 1;
-        
-        _tagCanvas.width = Math.floor(H_WINDOW * 2 * DPR);
-        _tagCanvas.height = Math.floor(V_WINDOW * 2 * DPR);
+        //console.log("H_WINDOW = " + H_WINDOW);
+        //console.log("DPR = " + DPR);
+        _tagCanvas.width = Math.floor(H_WINDOW * DPR);
+        _tagCanvas.height = Math.floor(V_WINDOW * DPR);
         _tagCanvas.style.width = H_WINDOW + "px";
         _tagCanvas.style.height = V_WINDOW + "px";
         
@@ -919,7 +1011,7 @@ function screenOrientation()
 {
     function updateOrientation()
     {
-        const ORIENTATION_SCREEN = screen.orientation.type;
+        const ORIENTATION_SCREEN = screen.orientation.type || "portrait-primary";
         
         if (ORIENTATION_SCREEN === "portrait-primary")
         {
