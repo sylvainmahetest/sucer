@@ -369,7 +369,7 @@ function particuleAnimation()
     function setupWebGL()
     {
         _webGL = _tagCanvas.getContext("webgl");
-        _webGL.clearColor(0.05, 0.05, 0.05, 1);
+        _webGL.clearColor(0.1, 0.1, 0.1, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
         //_webGL.enable(_webGL.PROGRAM_POINT_SIZE);
@@ -516,7 +516,7 @@ function particuleAnimation()
         {
             diameterGradient[indexDiameter] = randomFloat(2, 3);
             diameterGradient[indexGradient] = 0.25;
-            colorAlpha[indexAlpha] = 0.075;
+            colorAlpha[indexAlpha] = 0.75;
             mass[indexParticule] = randomFloat(1, 1.1);
             proximity[indexParticule] = randomFloat(1, 1.5);
         }
@@ -524,7 +524,7 @@ function particuleAnimation()
         {
             diameterGradient[indexDiameter] = randomFloat(5, 8);
             diameterGradient[indexGradient] = 0.15;
-            colorAlpha[indexAlpha] = 0.05;
+            colorAlpha[indexAlpha] = 0.5;
             mass[indexParticule] = randomFloat(1, 1.1);
             proximity[indexParticule] = randomFloat(1, 1.5);
         }
@@ -532,7 +532,7 @@ function particuleAnimation()
         {
             diameterGradient[indexDiameter] = randomFloat(15, 20);
             diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.005;
+            colorAlpha[indexAlpha] = 0.05;
             mass[indexParticule] = randomFloat(1.1, 2);
             proximity[indexParticule] = randomFloat(1.5, 2);
         }
@@ -540,7 +540,7 @@ function particuleAnimation()
         {
             diameterGradient[indexDiameter] = randomFloat(40, 70);
             diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.005;
+            colorAlpha[indexAlpha] = 0.05;
             mass[indexParticule] = randomFloat(2, 3);
             proximity[indexParticule] = randomFloat(2, 3);
         }
@@ -700,7 +700,7 @@ function particuleAnimation()
         smoothRingTouch = 1 - Math.pow(SMOOTH_RING_TOUCH, TIME_DELTA);
         widthSmoothRingTouch += (widthRingTouch - widthSmoothRingTouch) * smoothRingTouch;
         heightSmoothRingTouch += (heightRingTouch - heightSmoothRingTouch) * smoothRingTouch;
-        
+        console.log("heightSmoothRingTouch = " + heightSmoothRingTouch);
         vx = (xSmoothTouch - xSmoothTouchPrevious);
         vy = (ySmoothTouch - ySmoothTouchPrevious);
         
@@ -938,8 +938,8 @@ function particuleAnimation()
             diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude)) * DPR;
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
-            //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
-            //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
+            colorAlpha[indexRed] = 1 - (0.8 * magnitude);
+            colorAlpha[indexGreen] = 1 - (0.8 * (1 - magnitude));
             colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude);
         }
         
