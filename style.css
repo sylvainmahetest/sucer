@@ -13,19 +13,19 @@
 @font-face
 {
   font-family: "fontA";
-  src: url("NotoSans-VariableFont_wdth,wght.ttf") format("truetype");
+  src: url("NotoSans-VariableFont_wdthwght.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontB";
-  src: url("Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  src: url("Inter-VariableFont_opszwght.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontC";
-  src: url("RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf") format("truetype");
+  src: url("RobotoSerif-VariableFont_GRADopszwdthwght.ttf") format("truetype");
 }
 
 @font-face
