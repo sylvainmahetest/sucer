@@ -13,19 +13,31 @@
 @font-face
 {
   font-family: "fontA";
-  src: url("Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  src: url("NotoSans-VariableFont_wdth,wght.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontB";
-  src: url("RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf") format("truetype");
+  src: url("Inter-VariableFont_opsz,wght.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontC";
+  src: url("RobotoSerif-VariableFont_GRAD,opsz,wdth,wght.ttf") format("truetype");
+}
+
+@font-face
+{
+  font-family: "fontD";
   src: url("Oswald-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face
+{
+  font-family: "fontE";
+  src: url("PixelifySans-VariableFont_wght.ttf") format("truetype");
 }
 
 html
@@ -250,7 +262,7 @@ body
   -webkit-touch-callout: none;
 }
 
-body canvas tag-canvas
+body canvas #tag-canvas-particule
 {
   z-index: 0;
   transition-behavior: normal;
@@ -361,7 +373,449 @@ body canvas tag-canvas
   -webkit-touch-callout: none;
 }
 
+body #tag-name
+{
+  z-index: 1;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: absolute;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: left;
+  text-align-last: left;
+  left: 28px;
+  right: auto;
+  top: 28px;
+  bottom: auto;
+  width: auto;
+  min-width: auto;
+  max-width: auto;
+  height: auto;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: rgb(255, 255, 255);
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: "fontB";
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: rgb(0, 0, 0);
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
 
+body #tag-we-are
+{
+  z-index: 1;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: absolute;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: left;
+  text-align-last: left;
+  left: 30px;
+  right: auto;
+  top: 164px;
+  bottom: auto;
+  width: auto;
+  min-width: auto;
+  max-width: auto;
+  height: auto;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent;
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: "fontB";
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: rgb(255, 255, 255);
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body #tag-title
+{
+  z-index: 1;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: absolute;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: left;
+  text-align-last: left;
+  left: 30px;
+  right: auto;
+  top: 200px;
+  bottom: auto;
+  width: auto;
+  min-width: auto;
+  max-width: auto;
+  height: auto;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent;
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: "fontB";
+  font-size: 74px;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 77px;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: rgb(255, 255, 255);
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+body #tag-subtitle
+{
+  z-index: 1;
+  transition-behavior: normal;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
+  transition-timing-function: linear;
+  animation-name: none;
+  animation-delay: 0s;
+  animation-duration: 0s;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-iteration-count: 0;
+  animation-play-state: paused;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: absolute;
+  float: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: start;
+  vertical-align: top;
+  text-align: left;
+  text-align-last: left;
+  left: 30px;
+  right: auto;
+  top: 540px;
+  bottom: auto;
+  width: auto;
+  min-width: auto;
+  max-width: auto;
+  height: auto;
+  min-height: auto;
+  max-height: auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  background-color: transparent;
+  background-image: none;
+  background-attachment: local;
+  background-clip: border-box;
+  background-origin: border-box;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-blend-mode: normal;
+  backdrop-filter: none;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-left-style: none;
+  border-right-style: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  font-family: "fontB";
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  line-height: normal;
+  font-style: normal;
+  text-decoration-line: none;
+  text-decoration-thickness: 0px;
+  text-underline-offset: 0px;
+  text-decoration-style: none;
+  text-decoration-color: transparent;
+  text-shadow: none;
+  writing-mode: horizontal-tb;
+  color: rgb(255, 255, 255);
+  caret-color: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  resize: none;
+  outline-width: 0px;
+  outline-offset: 0px;
+  outline-style: none;
+  outline-color: transparent;
+  object-fit: none;
+  image-orientation: none;
+  transform-origin: center;
+  transform: none;
+  filter: none;
+  user-select: none;
+  cursor: auto;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
 
 
 

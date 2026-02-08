@@ -1,4 +1,4 @@
-customElements.define("tag-canvas", class extends HTMLElement{});
+customElements.define("tag-canvas-particule", class extends HTMLElement{});
 
 let _tagCanvas = null;
 let _webGL = null;
@@ -6,7 +6,6 @@ let _orientationScreen = 1;
 let _rxAccelerometer = 0;
 let _ryAccelerometer = 0;
 let _rzAccelerometer = 0;
-//let _tzAccelerometer = 0;
 
 function randomBinary(a, b)
 {
@@ -197,8 +196,6 @@ function particuleAnimation()
     let py = 0;
     let dx = 0;
     let dy = 0;
-    let sx = 0;
-    let sy = 0;
     let magnitude = 0;
     let magnitudeScale = 0;
     let force = 0;
@@ -212,44 +209,77 @@ function particuleAnimation()
     let yParallax = 0;
     let cosParallax = 0;
     let sinParallax = 0;
-    //EN COURS DE TRI
+    let hTeleport = 0;
+    let vTeleport = 0;
+    let fadeIn = 0;
     
+    const LOGO = document.createElement("canvas");
+    let ctxLogo = null;
+    let measureLogo = null;
+    let widthLogo = 0;
+    let heightLogo = 0;
+    let dataLogo = null;
+    let xLogo = 0;
+    let yLogo = 0;
+    let xPixelLogo = [];
+    let yPixelLogo = [];
+    let lenghtPixel = 0;
+    let randomLogo = 0;
+    
+    //EN COURS DE TRI
     const SAFE_SQRT = 0.000001;
+    
+    //const TEXT_LOGO = String.fromCodePoint(0x88fd);//FABRICATION
+    //const TEXT_LOGO = String.fromCodePoint(0x85dd);//ARTISANAT
+    const TEXT_LOGO = "SM";
+    const FONT_LOGO = "fontC";
+    const SIZE_LOGO = 400;
+    const WEIGHT_LOGO = 900;
+    
     const COUNT_PARTICLE = 10000;
     const COUNT_PARTICLE_SHAPE = 7500;
-    const SIZE_X_SPIN_SHAPE = 1500;
+    const SIZE_X_SPIN_SHAPE = 1000;
     const SIZE_Y_SPIN_SHAPE = 500;
     const COUNT_SPIN_SHAPE = 4;
     const BULB1_SPIN_SHAPE = 1;
-    const BULB2_SPIN_SHAPE = 100;
-    const FORCE_ATTRACTOR = 50;
-    //const FORCE_ATTRACTOR_TOUCH = 200;
+    const BULB2_SPIN_SHAPE = 200;
+    const FORCE_ATTRACTOR = 100;
     const FORCE_ATTRACTOR_RANDOM = 50;
-    const FORCE_TOUCH = 200;
+    const FORCE_TOUCH = 2;
     const RADIUS_TOUCH = 15;
-    const RING_TOUCH = 10;
     const SMOOTH_TOUCH = 0.0001;
     const SMOOTH_JITTER_TOUCH = 0.001;
     const SMOOTH_RING_TOUCH = 0.0001;
-    const SMOOTH_VELOCITY_TOUCH = 0.1
+    const SMOOTH_VELOCITY_TOUCH = 0.1;
     const CLAMP_MAGNITUDE = 250;
     const CLAMP_FORCE = 500;
-    const DAMPING = 0.5;
+    const DAMPING = 0.4;
     const VELOCITY_MIN = 10;
-    const WIDTH_BLUR = 600;
+    const WIDTH_BLUR = 5000;
     const HEIGHT_BLUR = 800;
-    const Y_OFFSET_BLUR = 150;
+    const Y_OFFSET_BLUR = 90;
+    const DIAMETER_BLUR = 15;
     
-    _tagCanvas = document.getElementById("tag-canvas");
+    _tagCanvas = document.getElementById("tag-canvas-particule");
     
     _tagCanvas.addEventListener("touchstart", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
+        const H_WINDOW = window.innerWidth;
+        const V_WINDOW = window.innerHeight;
+        const LENGTH_TOUCH = event.touches.length;
         
-        xTouch = ((((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        if (LENGTH_TOUCH === 1)
+        {
+            xTouch = (((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+            yTouch = -(((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        }
+        else if (LENGTH_TOUCH === 2)
+        {
+            xTouch = (((((event.touches[0].clientX + event.touches[1].clientX) * 0.5) - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+            yTouch = -(((((event.touches[0].clientY + event.touches[1].clientY) * 0.5) - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        }
+        
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         xSmoothTouchPrevious = xTouch;
@@ -267,11 +297,20 @@ function particuleAnimation()
     _tagCanvas.addEventListener("touchmove", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
+        const H_WINDOW = window.innerWidth;
+        const V_WINDOW = window.innerHeight;
+        const LENGTH_TOUCH = event.touches.length;
         
-        xTouch = ((((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        if (LENGTH_TOUCH === 1)
+        {
+            xTouch = (((event.touches[0].clientX - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+            yTouch = -(((event.touches[0].clientY - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        }
+        else if (LENGTH_TOUCH === 2)
+        {
+            xTouch = (((((event.touches[0].clientX + event.touches[1].clientX) * 0.5) - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+            yTouch = -(((((event.touches[0].clientY + event.touches[1].clientY) * 0.5) - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        }
         
         activeTouchA = true;
         activeTouchB = true;
@@ -297,11 +336,12 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointerenter", () =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
+        const H_WINDOW = window.innerWidth;
+        const V_WINDOW = window.innerHeight;
         
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+        yTouch = -(((event.clientY - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         xSmoothTouchPrevious = xTouch;
@@ -318,11 +358,12 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointerdown", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
+        const H_WINDOW = window.innerWidth;
+        const V_WINDOW = window.innerHeight;
         
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+        yTouch = -(((event.clientY - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
+        
         xSmoothTouch = xTouch;
         ySmoothTouch = yTouch;
         xSmoothTouchPrevious = xTouch;
@@ -335,11 +376,11 @@ function particuleAnimation()
     _tagCanvas.addEventListener("pointermove", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
-        const H_SCALE = window.innerWidth * 0.5;
-        const V_SCALE = window.innerHeight * 0.5;
+        const H_WINDOW = window.innerWidth;
+        const V_WINDOW = window.innerHeight;
         
-        xTouch = ((((event.clientX - RECTANGLE.left) / RECTANGLE.width) * 2) - 1) * H_SCALE;
-        yTouch = -((((event.clientY - RECTANGLE.top) / RECTANGLE.height) * 2) - 1) * V_SCALE;
+        xTouch = (((event.clientX - RECTANGLE.left) / RECTANGLE.width) - 0.5) * H_WINDOW;
+        yTouch = -(((event.clientY - RECTANGLE.top) / RECTANGLE.height) - 0.5) * V_WINDOW;
         
         activeTouchA = true;
         
@@ -369,12 +410,14 @@ function particuleAnimation()
     function setupWebGL()
     {
         _webGL = _tagCanvas.getContext("webgl");
-        _webGL.clearColor(0.1, 0.1, 0.1, 1);
+        _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
         //_webGL.enable(_webGL.PROGRAM_POINT_SIZE);
         
         vsSource = `
+        precision mediump float;
+        
         attribute vec2 positionBuffer;
         attribute vec2 diameterGradientBuffer;
         attribute vec4 colorAlphaBuffer;
@@ -401,10 +444,13 @@ function particuleAnimation()
         
         void main()
         {
-            vec2 point = gl_PointCoord - 0.5;
-            float length = length(point);
-            float alphaGradient = alphaCommon * smoothstep(0.5, gradientCommon, length);
-            gl_FragColor = vec4(colorCommon, alphaGradient);
+            if (alphaCommon > 0.001)
+            {
+                vec2 point = gl_PointCoord - 0.5;
+                float length = length(point);
+                float alphaGradient = alphaCommon * smoothstep(0.5, gradientCommon, length);
+                gl_FragColor = vec4(colorCommon, alphaGradient);
+            }
         }`;
     }
     
@@ -493,88 +539,38 @@ function particuleAnimation()
     positionRender = new Float32Array(index2);
     shapeAttractor1 = new Float32Array(index2);
     
-    for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
+    //CANVAS TEXTE EC
+    
+    ctxLogo = LOGO.getContext("2d");
+    ctxLogo.font = WEIGHT_LOGO + " " + SIZE_LOGO + "px " + FONT_LOGO;
+    
+    measureLogo = ctxLogo.measureText(TEXT_LOGO);
+    
+    widthLogo = Math.ceil(measureLogo.width);
+    heightLogo = Math.ceil(measureLogo.actualBoundingBoxAscent + measureLogo.actualBoundingBoxDescent);
+    
+    LOGO.width = widthLogo;
+    LOGO.height = heightLogo;
+    
+    ctxLogo.font = WEIGHT_LOGO + " " + SIZE_LOGO + "px " + FONT_LOGO;
+    ctxLogo.fillText(TEXT_LOGO, 0, measureLogo.actualBoundingBoxAscent);
+    
+    dataLogo = ctxLogo.getImageData(0, 0, widthLogo, heightLogo).data;
+    
+    for (yLogo = 0; yLogo < heightLogo; yLogo++)
     {
-        //INDEX
-        index2 = indexParticule * 2;
-        index4 = indexParticule * 4;
-        
-        indexParticuleX = index2;
-        indexParticuleY = index2 + 1;
-        indexDiameter = index2;
-        indexGradient = index2 + 1;
-        indexRed = index4;
-        indexGreen = index4 + 1;
-        indexBlue = index4 + 2;
-        indexAlpha = index4 + 3;
-        
-        colorAlpha[indexRed] = 1;
-        colorAlpha[indexGreen] = 1;
-        colorAlpha[indexBlue] = 1;
-        
-        if (randomInteger(1, 50) === 1)
+        for (xLogo = 0; xLogo < widthLogo; xLogo++)
         {
-            diameterGradient[indexDiameter] = randomFloat(2, 3);
-            diameterGradient[indexGradient] = 0.25;
-            colorAlpha[indexAlpha] = 0.75;
-            mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 1.5);
+            if (dataLogo[((yLogo * widthLogo + xLogo) * 4) + 3] > 0)
+            {
+                xPixelLogo.push(xLogo);
+                yPixelLogo.push(yLogo);
+            }
         }
-        else if (randomInteger(1, 10) === 1)
-        {
-            diameterGradient[indexDiameter] = randomFloat(5, 8);
-            diameterGradient[indexGradient] = 0.15;
-            colorAlpha[indexAlpha] = 0.5;
-            mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 1.5);
-        }
-        else if (randomInteger(1, 20) !== 1)
-        {
-            diameterGradient[indexDiameter] = randomFloat(15, 20);
-            diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.05;
-            mass[indexParticule] = randomFloat(1.1, 2);
-            proximity[indexParticule] = randomFloat(1.5, 2);
-        }
-        else
-        {
-            diameterGradient[indexDiameter] = randomFloat(40, 70);
-            diameterGradient[indexGradient] = 0;
-            colorAlpha[indexAlpha] = 0.05;
-            mass[indexParticule] = randomFloat(2, 3);
-            proximity[indexParticule] = randomFloat(2, 3);
-        }
-        
-        if (indexParticule < COUNT_PARTICLE_SHAPE)
-        {
-            shapeAttractor1[indexParticuleX] = randomFloat(-150, 150);
-            shapeAttractor1[indexParticuleY] = randomFloat(-150, 150);
-        }
-        else
-        {
-            radiusSpinShape = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
-            angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
-            weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
-            
-            shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
-            shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
-        }
-        /*
-        radiusSpinShape = indexParticule / COUNT_PARTICLE;
-        angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
-        weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
-        
-        shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
-        shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
-        */
-        
-        //radiusSpinShape = indexParticule / COUNT_PARTICLE;
-        //angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
-        //weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
-        
-        //shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
-        //shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
     }
+    
+    lenghtPixel = xPixelLogo.length;
+    //CANVAS TEXTE EC
     
     for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
     {
@@ -591,9 +587,127 @@ function particuleAnimation()
         indexBlue = index4 + 2;
         indexAlpha = index4 + 3;
         
-        diameterStart[indexParticule] = diameterGradient[indexDiameter];
-        gradientStart[indexParticule] = diameterGradient[indexGradient];
-        alphaStart[indexParticule] = colorAlpha[indexAlpha];
+        //CANVAS TEXTE EC
+        randomLogo = randomInteger(0, lenghtPixel);
+        //CANVAS TEXTE EC
+        
+        if (indexParticule < COUNT_PARTICLE_SHAPE && randomInteger(1, 100) === 1)
+        {
+            diameterStart[indexParticule] = randomFloat(2, 3);
+            gradientStart[indexParticule] = 0.25;
+            alphaStart[indexParticule] = 0.04;
+            mass[indexParticule] = randomFloat(1, 1.1);
+            proximity[indexParticule] = randomFloat(1, 1.3);
+            shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
+            shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
+        }
+        else if (indexParticule >= COUNT_PARTICLE_SHAPE && randomInteger(1, 10) === 1)
+        {
+            diameterStart[indexParticule] = randomFloat(2, 3);
+            gradientStart[indexParticule] = 0.25;
+            alphaStart[indexParticule] = 0.04;
+            mass[indexParticule] = randomFloat(1, 1.1);
+            proximity[indexParticule] = randomFloat(1, 1.3);
+        }
+        else if (randomInteger(1, 5) === 1)
+        {
+            diameterStart[indexParticule] = randomFloat(5, 6);
+            gradientStart[indexParticule] = 0.25;
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                alphaStart[indexParticule] = 0.03;
+            }
+            else
+            {
+                alphaStart[indexParticule] = 0.02;
+            }
+            
+            mass[indexParticule] = randomFloat(1, 1.1);
+            proximity[indexParticule] = randomFloat(1, 1.3);
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
+                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
+            }
+        }
+        else if (randomInteger(1, 10) !== 1)
+        {
+            diameterStart[indexParticule] = randomFloat(15, 20);
+            gradientStart[indexParticule] = 0;
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                alphaStart[indexParticule] = 0.004;
+            }
+            else
+            {
+                alphaStart[indexParticule] = 0.003;
+            }
+            
+            mass[indexParticule] = randomFloat(1.1, 2);
+            proximity[indexParticule] = randomFloat(1, 2);
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                shapeAttractor1[indexParticuleX] = (xPixelLogo[randomLogo] - (widthLogo * 0.5)) * 0.95;
+                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
+            }
+        }
+        else
+        {
+            diameterStart[indexParticule] = randomFloat(30, 50);
+            gradientStart[indexParticule] = 0;
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                alphaStart[indexParticule] = 0.004;
+            }
+            else
+            {
+                alphaStart[indexParticule] = 0.003;
+            }
+            
+            mass[indexParticule] = randomFloat(2, 3);
+            proximity[indexParticule] = randomFloat(1, 2);
+            
+            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            {
+                shapeAttractor1[indexParticuleX] = (xPixelLogo[randomLogo] - (widthLogo * 0.5)) * 0.95;
+                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
+            }
+        }
+        
+        colorAlpha[indexRed] = 1;
+        colorAlpha[indexGreen] = 1;
+        colorAlpha[indexBlue] = 1;
+        
+        if (indexParticule >= COUNT_PARTICLE_SHAPE)
+        {
+            radiusSpinShape = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
+            angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
+            weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
+            
+            shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+            shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
+        }
+    }
+    
+    for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
+    {
+        //INDEX
+        index2 = indexParticule * 2;
+        index4 = indexParticule * 4;
+        
+        indexParticuleX = index2;
+        indexParticuleY = index2 + 1;
+        indexDiameter = index2;
+        indexGradient = index2 + 1;
+        indexRed = index4;
+        indexGreen = index4 + 1;
+        indexBlue = index4 + 2;
+        indexAlpha = index4 + 3;
         
         velocity[indexParticuleX] = VELOCITY_MIN * randomBinary(-1, 1);
         velocity[indexParticuleY] = VELOCITY_MIN * randomBinary(-1, 1);
@@ -646,7 +760,16 @@ function particuleAnimation()
     
     function attractorRandom2()
     {
-        directionAttractorRandom = randomBinary(false, true);
+        if (randomInteger(1, 3) === 1)
+        {
+            directionAttractorRandom = false;
+        }
+        else
+        {
+            directionAttractorRandom = true;
+        }
+        
+        //directionAttractorRandom = randomBinary(false, true);
         timeAttractorRandom2 = performance.now() + randomInteger(100, 2000);
     }
     
@@ -700,7 +823,7 @@ function particuleAnimation()
         smoothRingTouch = 1 - Math.pow(SMOOTH_RING_TOUCH, TIME_DELTA);
         widthSmoothRingTouch += (widthRingTouch - widthSmoothRingTouch) * smoothRingTouch;
         heightSmoothRingTouch += (heightRingTouch - heightSmoothRingTouch) * smoothRingTouch;
-        console.log("heightSmoothRingTouch = " + heightSmoothRingTouch);
+        
         vx = (xSmoothTouch - xSmoothTouchPrevious);
         vy = (ySmoothTouch - ySmoothTouchPrevious);
         
@@ -810,15 +933,15 @@ function particuleAnimation()
                 }
                 else
                 {
-                    magnitudeScale = magnitude * 0.005;
+                    magnitudeScale = magnitude * 0.006;
                 }
                 
-                if (magnitudeScale < 2.2)
+                if (magnitudeScale < 1.5)
                 {
                     dx /= magnitude;
                     dy /= magnitude;
                     
-                    force = FORCE_ATTRACTOR_RANDOM * (2 - magnitudeScale);
+                    force = FORCE_ATTRACTOR_RANDOM * (1.5 - magnitudeScale);
                     
                     forceMassTime = (force / mass[indexParticule]) * TIME_DELTA;
                     
@@ -846,7 +969,7 @@ function particuleAnimation()
                 
                 magnitude = SAFE_SQRT + Math.sqrt((dx * dx) + (dy * dy));
                 
-                magnitudeSmoothScale = magnitudeSmooth * 15;
+                magnitudeSmoothScale = magnitudeSmooth * RADIUS_TOUCH;
                 
                 if (magnitudeSmoothScale > CLAMP_MAGNITUDE)
                 {
@@ -858,7 +981,8 @@ function particuleAnimation()
                     dx /= magnitude;
                     dy /= magnitude;
                     
-                    force = magnitudeSmooth * ((magnitudeSmoothScale * 2) - magnitude);
+                    force = magnitudeSmooth * ((magnitudeSmoothScale * FORCE_TOUCH) - magnitude);
+                    //force = magnitudeSmooth * (200 - magnitude);
                     
                     if (force > CLAMP_FORCE)
                     {
@@ -875,32 +999,53 @@ function particuleAnimation()
             }
             
             //DAMPING
-            sx = velocity[indexParticuleX];
-            sy = velocity[indexParticuleY];
+            vx = velocity[indexParticuleX];
+            vy = velocity[indexParticuleY];
             
-            damping = Math.pow(DAMPING, TIME_DELTA);
+            magnitude = SAFE_SQRT + Math.sqrt((vx * vx) + (vy * vy));
             
-            if (sx < -VELOCITY_MIN)
+            if (magnitude > VELOCITY_MIN)
             {
+                damping = magnitude * Math.pow(DAMPING, TIME_DELTA);
+                
+                if (damping < VELOCITY_MIN)
+                {
+                    damping = VELOCITY_MIN;
+                }
+                
+                damping /= magnitude;
+                
                 velocity[indexParticuleX] *= damping;
-            }
-            else if (sx > VELOCITY_MIN)
-            {
-                velocity[indexParticuleX] *= damping;
-            }
-            
-            if (sy < -VELOCITY_MIN)
-            {
-                velocity[indexParticuleY] *= damping;
-            }
-            else if (sy > VELOCITY_MIN)
-            {
                 velocity[indexParticuleY] *= damping;
             }
             
-            //UPDATE
+            //UPDATE POSITION
             position[indexParticuleX] += velocity[indexParticuleX] * TIME_DELTA;
             position[indexParticuleY] += velocity[indexParticuleY] * TIME_DELTA;
+            
+            //TELEPORT POSITION
+            hTeleport = H_SCALE * 10;
+            vTeleport = V_SCALE * 10;
+            
+            if (position[indexParticuleX] < -hTeleport)
+            {
+                position[indexParticuleX] = hTeleport;
+            }
+            
+            if (position[indexParticuleY] > hTeleport)
+            {
+                position[indexParticuleY] = -hTeleport;
+            }
+            
+            if (position[indexParticuleY] < -vTeleport)
+            {
+                position[indexParticuleY] = vTeleport;
+            }
+            
+            if (position[indexParticuleY] > vTeleport)
+            {
+                position[indexParticuleY] = -vTeleport;
+            }
             
             //PARALLAX
             xParallax = position[indexParticuleX] + (_rxAccelerometer * proximity[indexParticule]);
@@ -933,14 +1078,24 @@ function particuleAnimation()
             xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
             yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
             
-            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
+            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 0.9);
             
-            diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * 6 * magnitude)) * DPR;
+            fadeIn = time * 0.001;
+            
+            if (fadeIn > 1)
+            {
+                fadeIn = 1;
+            }
+            
+            diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude * DIAMETER_BLUR)) * DPR * fadeIn;
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
-            colorAlpha[indexRed] = 1 - (0.8 * magnitude);
-            colorAlpha[indexGreen] = 1 - (0.8 * (1 - magnitude));
-            colorAlpha[indexAlpha] = alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude);
+            //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
+            //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
+            
+            //colorAlpha[indexRed] = (1 - (0.1 * magnitude)) * fadeIn;
+            //colorAlpha[indexGreen] = (1 - (0.1 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
         }
         
         /*if (newRandomizeAttractor === 2)
@@ -1041,8 +1196,15 @@ function href(index)
     
 }
 
-function loading()
+async function loading()
 {
+    await document.fonts.load("0px fontA");
+    await document.fonts.load("0px fontB");
+    await document.fonts.load("0px fontC");
+    await document.fonts.load("0px fontD");
+    await document.fonts.load("0px fontE");
+    await document.fonts.ready;
+    
     imu();
     particuleAnimation();
     
