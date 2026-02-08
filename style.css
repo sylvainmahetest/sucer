@@ -13,31 +13,31 @@
 @font-face
 {
   font-family: "fontA";
-  src: url("NotoSans-VariableFont_wdthwght.ttf") format("truetype");
+  src: url("inter.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontB";
-  src: url("Inter-VariableFont_opszwght.ttf") format("truetype");
+  src: url("inter.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontC";
-  src: url("RobotoSerif-VariableFont_GRADopszwdthwght.ttf") format("truetype");
+  src: url("inter.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontD";
-  src: url("Oswald-VariableFont_wght.ttf") format("truetype");
+  src: url("inter.ttf") format("truetype");
 }
 
 @font-face
 {
   font-family: "fontE";
-  src: url("PixelifySans-VariableFont_wght.ttf") format("truetype");
+  src: url("inter.ttf") format("truetype");
 }
 
 html
