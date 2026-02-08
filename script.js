@@ -231,10 +231,10 @@ function particuleAnimation()
     
     //const TEXT_LOGO = String.fromCodePoint(0x88fd);//FABRICATION
     //const TEXT_LOGO = String.fromCodePoint(0x85dd);//ARTISANAT
-    const TEXT_LOGO = "L";
+    const TEXT_LOGO = "S";
     const FONT_LOGO = "fontC";
     const SIZE_LOGO = 700;
-    const WEIGHT_LOGO = 200;
+    const WEIGHT_LOGO = 500;
     
     const COUNT_PARTICLE = 10000;
     const COUNT_PARTICLE_SHAPE = 7500;
@@ -256,8 +256,8 @@ function particuleAnimation()
     const DAMPING = 0.4;
     const VELOCITY_MIN = 10;
     const WIDTH_BLUR = 5000;
-    const HEIGHT_BLUR = 1800;
-    const Y_OFFSET_BLUR = 190;
+    const HEIGHT_BLUR = 800;
+    const Y_OFFSET_BLUR = 290;
     const DIAMETER_BLUR = 15;
     
     _tagCanvas = document.getElementById("tag-canvas-particule");
@@ -594,7 +594,7 @@ function particuleAnimation()
         if (indexParticule < COUNT_PARTICLE_SHAPE && randomInteger(1, 100) === 1)
         {
             diameterStart[indexParticule] = randomFloat(2, 3);
-            gradientStart[indexParticule] = 0.25;
+            gradientStart[indexParticule] = 0.49;
             alphaStart[indexParticule] = 0.04;
             mass[indexParticule] = randomFloat(1, 1.1);
             proximity[indexParticule] = randomFloat(1, 1);
@@ -612,7 +612,7 @@ function particuleAnimation()
         else if (randomInteger(1, 5) === 1)
         {
             diameterStart[indexParticule] = randomFloat(5, 6);
-            gradientStart[indexParticule] = 0.25;
+            gradientStart[indexParticule] = 0.49;
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
@@ -624,7 +624,7 @@ function particuleAnimation()
             }
             
             mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 1);
+            proximity[indexParticule] = randomFloat(1, 0.9);
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
@@ -1093,8 +1093,8 @@ function particuleAnimation()
             //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
-            //colorAlpha[indexRed] = (1 - (0.1 * magnitude)) * fadeIn;
-            //colorAlpha[indexGreen] = (1 - (0.1 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexRed] = (1 - (0.3 * magnitude)) * fadeIn;
+            colorAlpha[indexGreen] = (1 - (0.2 * (1 - magnitude))) * fadeIn;
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
         }
         
