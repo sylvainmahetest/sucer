@@ -256,9 +256,11 @@ function particuleAnimation()
     const DAMPING = 0.4;
     const VELOCITY_MIN = 10;
     const WIDTH_BLUR = 5000;
-    const HEIGHT_BLUR = 800;
-    const Y_OFFSET_BLUR = 290;
-    const DIAMETER_BLUR = 15;
+    const HEIGHT_BLUR = 500;
+    const Y_OFFSET_BLUR = 190;
+    const DIAMETER_BLUR = 10;
+    
+    //console.log(window.innerHeight);
     
     _tagCanvas = document.getElementById("tag-canvas-particule");
     
@@ -595,7 +597,7 @@ function particuleAnimation()
         {
             diameterStart[indexParticule] = randomFloat(2, 3);
             gradientStart[indexParticule] = 0.49;
-            alphaStart[indexParticule] = 0.04;
+            alphaStart[indexParticule] = 0.08;
             mass[indexParticule] = randomFloat(1, 1.1);
             proximity[indexParticule] = randomFloat(1, 1);
             shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
@@ -605,7 +607,7 @@ function particuleAnimation()
         {
             diameterStart[indexParticule] = randomFloat(2, 3);
             gradientStart[indexParticule] = 0.25;
-            alphaStart[indexParticule] = 0.04;
+            alphaStart[indexParticule] = 0.08;
             mass[indexParticule] = randomFloat(1, 1.1);
             proximity[indexParticule] = randomFloat(1, 1.3);
         }
@@ -616,11 +618,11 @@ function particuleAnimation()
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
-                alphaStart[indexParticule] = 0.03;
+                alphaStart[indexParticule] = 0.06;
             }
             else
             {
-                alphaStart[indexParticule] = 0.02;
+                alphaStart[indexParticule] = 0.04;
             }
             
             mass[indexParticule] = randomFloat(1, 1.1);
@@ -639,11 +641,11 @@ function particuleAnimation()
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
-                alphaStart[indexParticule] = 0.004;
+                alphaStart[indexParticule] = 0.008;
             }
             else
             {
-                alphaStart[indexParticule] = 0.003;
+                alphaStart[indexParticule] = 0.006;
             }
             
             mass[indexParticule] = randomFloat(1.1, 2);
@@ -662,11 +664,11 @@ function particuleAnimation()
             
             if (indexParticule < COUNT_PARTICLE_SHAPE)
             {
-                alphaStart[indexParticule] = 0.004;
+                alphaStart[indexParticule] = 0.008;
             }
             else
             {
-                alphaStart[indexParticule] = 0.003;
+                alphaStart[indexParticule] = 0.006;
             }
             
             mass[indexParticule] = randomFloat(2, 3);
@@ -1048,8 +1050,8 @@ function particuleAnimation()
             }
             
             //PARALLAX
-            xParallax = position[indexParticuleX] + ((80 +_rxAccelerometer) * proximity[indexParticule]);
-            yParallax = position[indexParticuleY] + ((40 +_ryAccelerometer) * proximity[indexParticule]);
+            xParallax = position[indexParticuleX] + ((0 +_rxAccelerometer) * proximity[indexParticule]);
+            yParallax = position[indexParticuleY] + ((0 +_ryAccelerometer) * proximity[indexParticule]);
             
             positionRender[indexParticuleX] = ((xParallax * cosParallax) - (yParallax * sinParallax)) / H_SCALE;
             positionRender[indexParticuleY] = ((xParallax * sinParallax) + (yParallax * cosParallax)) / V_SCALE;
@@ -1087,14 +1089,21 @@ function particuleAnimation()
                 fadeIn = 1;
             }
             
+            if (diameterStart[indexParticule] < 7)
+            {
             diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude * DIAMETER_BLUR)) * DPR * fadeIn;
+            }
+            else
+            {
+            	diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude)) * DPR * fadeIn;
+            }
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
             //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
-            colorAlpha[indexRed] = (1 - (0.3 * magnitude)) * fadeIn;
-            colorAlpha[indexGreen] = (1 - (0.2 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexRed] = (1 - (0.2 * magnitude)) * 1;
+            colorAlpha[indexGreen] = (1 - (0.2 * (1 - magnitude))) * 1;
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
         }
         
