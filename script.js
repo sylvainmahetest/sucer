@@ -255,7 +255,7 @@ function particuleAnimation()
     const CLAMP_FORCE = 500;
     const DAMPING = 0.4;
     const VELOCITY_MIN = 10;
-    const WIDTH_BLUR = 5000;
+    const WIDTH_BLUR = 1000;
     const HEIGHT_BLUR = 500;
     const Y_OFFSET_BLUR = 190;
     const DIAMETER_BLUR = 10;
@@ -1080,7 +1080,7 @@ function particuleAnimation()
             xBlur = clampPositiveSymmetricalMinMax(position[indexParticuleX], WIDTH_BLUR);
             yBlur = clampPositiveSymmetricalMinMax(position[indexParticuleY] + Y_OFFSET_BLUR, HEIGHT_BLUR);
             
-            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 0.9);
+            magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
             fadeIn = time * 0.001;
             
