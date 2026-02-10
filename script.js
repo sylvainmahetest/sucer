@@ -61,7 +61,7 @@ function imu()
     let betaAccelerometer = 0;
     let gammaAccelerometer = 0;
     const SMOOTH_R = 0.001;
-    const TRAVEL_RXY = 2500;
+    const TRAVEL_RXY = 1250;
     const TRAVEL_RZ = 500;
     
     function imuRead(event)
@@ -232,9 +232,9 @@ function particuleAnimation()
     //const TEXT_LOGO = String.fromCodePoint(0x88fd);//FABRICATION
     //const TEXT_LOGO = String.fromCodePoint(0x85dd);//ARTISANAT
     const TEXT_LOGO = "S";
-    const FONT_LOGO = "fontC";
+    const FONT_LOGO = "fontB";
     const SIZE_LOGO = 700;
-    const WEIGHT_LOGO = 500;
+    const WEIGHT_LOGO = 200;
     
     const COUNT_PARTICLE = 10000;
     const COUNT_PARTICLE_SHAPE = 7500;
@@ -258,9 +258,7 @@ function particuleAnimation()
     const WIDTH_BLUR = 1000;
     const HEIGHT_BLUR = 500;
     const Y_OFFSET_BLUR = 190;
-    const DIAMETER_BLUR = 10;
-    
-    //console.log(window.innerHeight);
+    const DIAMETER_BLUR = 7;
     
     _tagCanvas = document.getElementById("tag-canvas-particule");
     
@@ -593,100 +591,96 @@ function particuleAnimation()
         randomLogo = randomInteger(0, lenghtPixel);
         //CANVAS TEXTE EC
         
-        if (indexParticule < COUNT_PARTICLE_SHAPE && randomInteger(1, 100) === 1)
+        if (indexParticule < COUNT_PARTICLE_SHAPE)
         {
-            diameterStart[indexParticule] = randomFloat(2, 3);
-            gradientStart[indexParticule] = 0.49;
-            alphaStart[indexParticule] = 0.08;
-            mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 1);
-            shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
-            shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
-        }
-        else if (indexParticule >= COUNT_PARTICLE_SHAPE && randomInteger(1, 10) === 1)
-        {
-            diameterStart[indexParticule] = randomFloat(2, 3);
-            gradientStart[indexParticule] = 0.25;
-            alphaStart[indexParticule] = 0.08;
-            mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 1.3);
-        }
-        else if (randomInteger(1, 5) === 1)
-        {
-            diameterStart[indexParticule] = randomFloat(5, 6);
-            gradientStart[indexParticule] = 0.49;
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            //PARTICULE 1A
+            if (randomInteger(1, 100) === 1)
             {
-                alphaStart[indexParticule] = 0.06;
-            }
-            else
-            {
-                alphaStart[indexParticule] = 0.04;
-            }
-            
-            mass[indexParticule] = randomFloat(1, 1.1);
-            proximity[indexParticule] = randomFloat(1, 0.9);
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
-            {
+                diameterStart[indexParticule] = randomFloat(2, 3);
+                gradientStart[indexParticule] = 0.49;
+                alphaStart[indexParticule] = 0.1;
+                mass[indexParticule] = randomFloat(1, 1.1);
+                proximity[indexParticule] = 2;
+                
                 shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
                 shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
             }
-        }
-        else if (randomInteger(1, 10) !== 1)
-        {
-            diameterStart[indexParticule] = randomFloat(15, 20);
-            gradientStart[indexParticule] = 0;
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            //PARTICULE 2A
+            else if (randomInteger(1, 5) === 1)
             {
-                alphaStart[indexParticule] = 0.008;
+                diameterStart[indexParticule] = randomFloat(5, 6);
+                gradientStart[indexParticule] = 0.49;
+                alphaStart[indexParticule] = 0.04;
+                mass[indexParticule] = randomFloat(1, 1.1);
+                proximity[indexParticule] = randomFloat(1.7, 2);
+                
+                shapeAttractor1[indexParticuleX] = xPixelLogo[randomLogo] - (widthLogo * 0.5);
+                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
             }
+            //PARTICULE 3A
+            else if (randomInteger(1, 10) !== 1)
+            {
+                diameterStart[indexParticule] = randomFloat(15, 20);
+                gradientStart[indexParticule] = 0;
+                alphaStart[indexParticule] = 0.008;
+                mass[indexParticule] = randomFloat(1.1, 2);
+                proximity[indexParticule] = randomFloat(1, 2);
+                
+                shapeAttractor1[indexParticuleX] = (xPixelLogo[randomLogo] - (widthLogo * 0.5)) * 0.95;
+                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
+            }
+            //PARTICULE 4A
             else
             {
-                alphaStart[indexParticule] = 0.006;
-            }
-            
-            mass[indexParticule] = randomFloat(1.1, 2);
-            proximity[indexParticule] = randomFloat(1, 0.25);
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
-            {
+                diameterStart[indexParticule] = randomFloat(30, 50);
+                gradientStart[indexParticule] = 0;
+                alphaStart[indexParticule] = 0.008;
+                mass[indexParticule] = randomFloat(2, 3);
+                proximity[indexParticule] = randomFloat(1, 2);
+                
                 shapeAttractor1[indexParticuleX] = (xPixelLogo[randomLogo] - (widthLogo * 0.5)) * 0.95;
                 shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
             }
         }
         else
         {
-            diameterStart[indexParticule] = randomFloat(30, 50);
-            gradientStart[indexParticule] = 0;
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
+            //PARTICULE 1B
+            if (randomInteger(1, 10) === 1)
             {
-                alphaStart[indexParticule] = 0.008;
+                diameterStart[indexParticule] = randomFloat(2, 3);
+                gradientStart[indexParticule] = 0;
+                alphaStart[indexParticule] = 0.1;
+                mass[indexParticule] = randomFloat(1, 1.1);
+                proximity[indexParticule] = randomFloat(1, 1.1);
             }
+            //PARTICULE 2B
+            else if (randomInteger(1, 5) === 1)
+            {
+                diameterStart[indexParticule] = randomFloat(5, 6);
+                gradientStart[indexParticule] = 0;
+                alphaStart[indexParticule] = 0.04;
+                mass[indexParticule] = randomFloat(1, 1.1);
+                proximity[indexParticule] = randomFloat(1, 1.25);
+            }
+            //PARTICULE 3B
+            else if (randomInteger(1, 10) !== 1)
+            {
+                diameterStart[indexParticule] = randomFloat(15, 20);
+                gradientStart[indexParticule] = 0;
+                alphaStart[indexParticule] = 0.006;
+                mass[indexParticule] = randomFloat(1.1, 2);
+                proximity[indexParticule] = randomFloat(1, 1.5);
+            }
+            //PARTICULE 4B
             else
             {
+                diameterStart[indexParticule] = randomFloat(30, 50);
+                gradientStart[indexParticule] = 0;
                 alphaStart[indexParticule] = 0.006;
+                mass[indexParticule] = randomFloat(2, 3);
+                proximity[indexParticule] = randomFloat(1, 2);
             }
             
-            mass[indexParticule] = randomFloat(2, 3);
-            proximity[indexParticule] = randomFloat(1, 0.25);
-            
-            if (indexParticule < COUNT_PARTICLE_SHAPE)
-            {
-                shapeAttractor1[indexParticuleX] = (xPixelLogo[randomLogo] - (widthLogo * 0.5)) * 0.95;
-                shapeAttractor1[indexParticuleY] = (heightLogo * 0.5) - yPixelLogo[randomLogo];
-            }
-        }
-        
-        colorAlpha[indexRed] = 1;
-        colorAlpha[indexGreen] = 1;
-        colorAlpha[indexBlue] = 1;
-        
-        if (indexParticule >= COUNT_PARTICLE_SHAPE)
-        {
             radiusSpinShape = (indexParticule - COUNT_PARTICLE_SHAPE) / (COUNT_PARTICLE - COUNT_PARTICLE_SHAPE);
             angleSpinShape = angleSpinShapeStartShape + directionSpinShape * radiusSpinShape * COUNT_SPIN_SHAPE * Math.PI * 2;
             weightSpinShape = (1 / Math.exp(radiusSpinShape * BULB1_SPIN_SHAPE)) * BULB2_SPIN_SHAPE;
@@ -694,6 +688,10 @@ function particuleAnimation()
             shapeAttractor1[indexParticuleX] = (Math.cos(angleSpinShape) * radiusSpinShape * SIZE_X_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
             shapeAttractor1[indexParticuleY] = (Math.sin(angleSpinShape) * radiusSpinShape * SIZE_Y_SPIN_SHAPE) + randomFloat(-weightSpinShape, weightSpinShape);
         }
+        
+        colorAlpha[indexRed] = 1;
+        colorAlpha[indexGreen] = 1;
+        colorAlpha[indexBlue] = 1;
     }
     
     for (indexParticule = 0; indexParticule < COUNT_PARTICLE; indexParticule++)
@@ -1034,9 +1032,9 @@ function particuleAnimation()
                 position[indexParticuleX] = hTeleport;
             }
             
-            if (position[indexParticuleY] > hTeleport)
+            if (position[indexParticuleX] > hTeleport)
             {
-                position[indexParticuleY] = -hTeleport;
+                position[indexParticuleX] = -hTeleport;
             }
             
             if (position[indexParticuleY] < -vTeleport)
@@ -1050,8 +1048,8 @@ function particuleAnimation()
             }
             
             //PARALLAX
-            xParallax = position[indexParticuleX] + ((0 +_rxAccelerometer) * proximity[indexParticule]);
-            yParallax = position[indexParticuleY] + ((0 +_ryAccelerometer) * proximity[indexParticule]);
+            xParallax = position[indexParticuleX] + (_rxAccelerometer * proximity[indexParticule]);
+            yParallax = (position[indexParticuleY] + ((_ryAccelerometer + 70) * proximity[indexParticule])) - 140;
             
             positionRender[indexParticuleX] = ((xParallax * cosParallax) - (yParallax * sinParallax)) / H_SCALE;
             positionRender[indexParticuleY] = ((xParallax * sinParallax) + (yParallax * cosParallax)) / V_SCALE;
@@ -1089,22 +1087,24 @@ function particuleAnimation()
                 fadeIn = 1;
             }
             
-            if (diameterStart[indexParticule] < 7)
+            if (diameterStart[indexParticule] < 10)
             {
-            diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude * DIAMETER_BLUR)) * DPR * fadeIn;
+                diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude * DIAMETER_BLUR)) * DPR * fadeIn;
             }
             else
             {
-            	diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude)) * DPR * fadeIn;
+                diameterGradient[indexDiameter] = (diameterStart[indexParticule] + (diameterStart[indexParticule] * magnitude)) * DPR * fadeIn;
             }
+            
             diameterGradient[indexGradient] = gradientStart[indexParticule] - (gradientStart[indexParticule] * magnitude);
             
             //colorAlpha[indexRed] = 1 - (0.2 * magnitude);
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
-            colorAlpha[indexRed] = (1 - (0.2 * magnitude)) * 1;
-            colorAlpha[indexGreen] = (1 - (0.2 * (1 - magnitude))) * 1;
+            colorAlpha[indexRed] = 1 - (0.25 * magnitude);
+            //colorAlpha[indexGreen] = (1 - (0.1 * (1 - magnitude))) * fadeIn;
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
+            //////////////////////////(0.1 - (0.1 * 0.5 * 1))
         }
         
         /*if (newRandomizeAttractor === 2)
@@ -1211,7 +1211,6 @@ async function loading()
     await document.fonts.load("0px fontB");
     await document.fonts.load("0px fontC");
     await document.fonts.load("0px fontD");
-    await document.fonts.load("0px fontE");
     await document.fonts.ready;
     
     imu();
