@@ -255,9 +255,9 @@ function particuleAnimation()
     const CLAMP_FORCE = 500;
     const DAMPING = 0.4;
     const VELOCITY_MIN = 10;
-    const WIDTH_BLUR = 1000;
-    const HEIGHT_BLUR = 500;
-    const Y_OFFSET_BLUR = 190;
+    const WIDTH_BLUR = 500;
+    const HEIGHT_BLUR = 400;
+    const Y_OFFSET_BLUR = 300;
     const DIAMETER_BLUR = 7;
     
     _tagCanvas = document.getElementById("tag-canvas-particule");
@@ -333,7 +333,7 @@ function particuleAnimation()
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("pointerenter", () =>
+    _tagCanvas.addEventListener("pointerenter", event =>
     {
         const RECTANGLE = _tagCanvas.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
@@ -1102,7 +1102,7 @@ function particuleAnimation()
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
             colorAlpha[indexRed] = 1 - (0.25 * magnitude);
-            //colorAlpha[indexGreen] = (1 - (0.1 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexGreen] = (1 - (0.75 * (1 - magnitude))) * fadeIn;
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
             //////////////////////////(0.1 - (0.1 * 0.5 * 1))
         }
