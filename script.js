@@ -1,11 +1,43 @@
 customElements.define("tag-canvas-particule", class extends HTMLElement{});
+customElements.define("tag-title", class extends HTMLElement{});
 
-let _tagCanvas = null;
+let _tagCanvasParticule = null;
 let _webGL = null;
 let _orientationScreen = 1;
 let _rxAccelerometer = 0;
 let _ryAccelerometer = 0;
 let _rzAccelerometer = 0;
+
+let _tagTitle = null;
+
+function fitText(tag, fontSize, letterSpacing, lineHeight)
+{
+    //const MARGIN = tag.style.marginLeft + tag.style.marginRight;
+    //const MARGIN_LEFT = tag.style.marginLeft;
+    //const MARGIN_RIGHT = tag.style.marginRight;
+    //console.log("MARGIN = " + MARGIN);
+    const RATIO_LETTER_SPACING = letterSpacing / fontSize;
+    const RATIO_LINE_HEIGHT = lineHeight / fontSize;
+    
+    tag.style.visibility = "hidden";
+    tag.style.fontSize = fontSize + "px";
+    tag.style.letterSpacing = letterSpacing + "px";
+    tag.style.lineHeight = lineHeight + "px";
+    
+    while(tag.scrollWidth + 60 > window.innerWidth)
+    {
+        fontSize--;
+        
+        letterSpacing = fontSize * RATIO_LETTER_SPACING;
+        lineHeight = fontSize * RATIO_LINE_HEIGHT;
+        
+        tag.style.fontSize = fontSize + "px";
+        tag.style.letterSpacing = letterSpacing + "px";
+        tag.style.lineHeight = lineHeight + "px";
+    }
+    
+    tag.style.visibility = "visible";
+}
 
 function randomBinary(a, b)
 {
@@ -260,11 +292,11 @@ function particuleAnimation()
     const Y_OFFSET_BLUR = 300;
     const DIAMETER_BLUR = 7;
     
-    _tagCanvas = document.getElementById("tag-canvas-particule");
+    _tagCanvasParticule = document.getElementById("tag-canvas-particule");
     
-    _tagCanvas.addEventListener("touchstart", event =>
+    _tagCanvasParticule.addEventListener("touchstart", event =>
     {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const RECTANGLE = _tagCanvasParticule.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         const LENGTH_TOUCH = event.touches.length;
@@ -294,9 +326,9 @@ function particuleAnimation()
         passive: false
     });
     
-    _tagCanvas.addEventListener("touchmove", event =>
+    _tagCanvasParticule.addEventListener("touchmove", event =>
     {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const RECTANGLE = _tagCanvasParticule.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         const LENGTH_TOUCH = event.touches.length;
@@ -321,21 +353,21 @@ function particuleAnimation()
         passive: false
     });
     
-    _tagCanvas.addEventListener("touchend", () =>
+    _tagCanvasParticule.addEventListener("touchend", () =>
     {
         activeTouchA = false;
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("touchcancel", () =>
+    _tagCanvasParticule.addEventListener("touchcancel", () =>
     {
         activeTouchA = false;
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("pointerenter", event =>
+    _tagCanvasParticule.addEventListener("pointerenter", event =>
     {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const RECTANGLE = _tagCanvasParticule.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         
@@ -355,9 +387,9 @@ function particuleAnimation()
         }
     });
     
-    _tagCanvas.addEventListener("pointerdown", event =>
+    _tagCanvasParticule.addEventListener("pointerdown", event =>
     {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const RECTANGLE = _tagCanvasParticule.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         
@@ -373,9 +405,9 @@ function particuleAnimation()
         activeTouchB = true;
     });
     
-    _tagCanvas.addEventListener("pointermove", event =>
+    _tagCanvasParticule.addEventListener("pointermove", event =>
     {
-        const RECTANGLE = _tagCanvas.getBoundingClientRect();
+        const RECTANGLE = _tagCanvasParticule.getBoundingClientRect();
         const H_WINDOW = window.innerWidth;
         const V_WINDOW = window.innerHeight;
         
@@ -390,18 +422,18 @@ function particuleAnimation()
         }
     });
     
-    _tagCanvas.addEventListener("pointerup", () =>
+    _tagCanvasParticule.addEventListener("pointerup", () =>
     {
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("pointerleave", () =>
+    _tagCanvasParticule.addEventListener("pointerleave", () =>
     {
         activeTouchA = false;
         activeTouchB = false;
     });
     
-    _tagCanvas.addEventListener("pointercancel", () =>
+    _tagCanvasParticule.addEventListener("pointercancel", () =>
     {
         activeTouchA = false;
         activeTouchB = false;
@@ -409,7 +441,7 @@ function particuleAnimation()
     
     function setupWebGL()
     {
-        _webGL = _tagCanvas.getContext("webgl");
+        _webGL = _tagCanvasParticule.getContext("webgl");
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
@@ -1143,6 +1175,11 @@ function particuleAnimation()
     requestAnimationFrame(updateAnimation);
 }
 
+function text()
+{
+    _tagTitle = document.getElementById("tag-title");
+}
+
 function windowResize()
 {
     let hWindow = 0;
@@ -1155,12 +1192,14 @@ function windowResize()
         vWindow = window.innerHeight;
         dpr = window.devicePixelRatio || 1;
         
-        _tagCanvas.width = Math.floor(hWindow * dpr);
-        _tagCanvas.height = Math.floor(vWindow * dpr);
-        _tagCanvas.style.width = hWindow + "px";
-        _tagCanvas.style.height = vWindow + "px";
+        _tagCanvasParticule.width = Math.floor(hWindow * dpr);
+        _tagCanvasParticule.height = Math.floor(vWindow * dpr);
+        _tagCanvasParticule.style.width = hWindow + "px";
+        _tagCanvasParticule.style.height = vWindow + "px";
         
-        _webGL.viewport(0, 0, _tagCanvas.width, _tagCanvas.height);
+        _webGL.viewport(0, 0, _tagCanvasParticule.width, _tagCanvasParticule.height);
+        
+        fitText(_tagTitle, 100, 0, 110);
     }
     
     updateSize();
@@ -1215,6 +1254,8 @@ async function loading()
     
     imu();
     particuleAnimation();
+    
+    text();
     
     windowResize();
     screenOrientation();
