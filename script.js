@@ -806,6 +806,7 @@ function particuleAnimation()
     }
     
     timePrevious = performance.now();
+    let timeInit = performance.now();
     
     function updateAnimation(time)
     {
@@ -1112,7 +1113,7 @@ function particuleAnimation()
             
             magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
-            fadeIn = time * 0.001;
+            fadeIn = (time - timeInit) * 0.001;
             
             if (fadeIn > 1)
             {
