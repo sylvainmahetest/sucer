@@ -1289,7 +1289,7 @@ function screenOrientation()
 
 function loaded()
 {
-    document.body.style.visibility = "visible";
+    document.body.style.opacity = 1;
 }
 
 function href(index)
