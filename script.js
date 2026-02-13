@@ -1293,7 +1293,7 @@ function screenOrientation()
 
 function loaded()
 {
-    document.body.style.opacity = 1;
+ //   document.body.style.opacity = 1;
 }
 
 function href(index)
