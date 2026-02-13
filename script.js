@@ -3,6 +3,7 @@ customElements.define("tag-overtitle", class extends HTMLElement{});
 customElements.define("tag-title", class extends HTMLElement{});
 customElements.define("tag-subtitle", class extends HTMLElement{});
 customElements.define("tag-scroll-down", class extends HTMLElement{});
+customElements.define("tag-black", class extends HTMLElement{});
 
 let _tagCanvasParticule = null;
 let _webGL = null;
@@ -15,6 +16,7 @@ let _tagOvertitle = null;
 let _tagTitle = null;
 let _tagSubtitle = null;
 let _tagScrollDown = null;
+let _tagBlack = null;
 
 function fitText(tag, fontSize, letterSpacing, lineHeight)
 {
@@ -1203,7 +1205,7 @@ function text()
     _tagTitle = document.getElementById("tag-title");
     _tagSubtitle = document.getElementById("tag-subtitle");
     _tagScrollDown = document.getElementById("tag-scroll-down");
-    
+    _tagBlack= document.getElementById("tag-black");
     timePreviousAbsolute = performance.now();
     
     
@@ -1229,7 +1231,7 @@ function text()
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
         
-       // document.body.style.opacity = fadeIn;
+       _tagBlack.style.opacity = 1 - fadeIn;
         
         requestAnimationFrame(updateAnimation);
     }
