@@ -589,7 +589,7 @@ body #tag-name
   -webkit-touch-callout: none;
 }
 
-body #tag-we-are
+body #tag-overtitle
 {
   z-index: 1;
   transition-behavior: normal;
@@ -607,7 +607,7 @@ body #tag-we-are
   animation-play-state: paused;
   display: block;
   visibility: visible;
-  opacity: 1;
+  opacity: 0;
   position: relative;
   float: none;
   flex-direction: row;
@@ -718,7 +718,7 @@ body #tag-title
   animation-play-state: paused;
   display: block;
   visibility: visible;
-  opacity: 1;
+  opacity: 0;
   position: relative;
   float: none;
   flex-direction: row;
@@ -829,7 +829,7 @@ body #tag-subtitle
   animation-play-state: paused;
   display: block;
   visibility: visible;
-  opacity: 1;
+  opacity: 0;
   position: relative;
   float: none;
   flex-direction: row;
@@ -940,7 +940,7 @@ body #tag-scroll-down
   animation-play-state: paused;
   display: block;
   visibility: visible;
-  opacity: 1;
+  opacity: 0;
   position: relative;
   float: none;
   flex-direction: row;

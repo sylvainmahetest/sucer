@@ -1,5 +1,8 @@
 customElements.define("tag-canvas-particule", class extends HTMLElement{});
+customElements.define("tag-overtitle", class extends HTMLElement{});
 customElements.define("tag-title", class extends HTMLElement{});
+customElements.define("tag-subtitle", class extends HTMLElement{});
+customElements.define("tag-scroll-down", class extends HTMLElement{});
 
 let _tagCanvasParticule = null;
 let _webGL = null;
@@ -8,7 +11,10 @@ let _rxAccelerometer = 0;
 let _ryAccelerometer = 0;
 let _rzAccelerometer = 0;
 
+let _tagOvertitle = null;
 let _tagTitle = null;
+let _tagSubtitle = null;
+let _tagScrollDown = null;
 
 function fitText(tag, fontSize, letterSpacing, lineHeight)
 {
@@ -18,6 +24,7 @@ function fitText(tag, fontSize, letterSpacing, lineHeight)
     //console.log("MARGIN = " + MARGIN);
     const RATIO_LETTER_SPACING = letterSpacing / fontSize;
     const RATIO_LINE_HEIGHT = lineHeight / fontSize;
+    //const FONT_SIZE = fontSize;
     
     tag.style.visibility = "hidden";
     tag.style.fontSize = fontSize + "px";
@@ -35,6 +42,17 @@ function fitText(tag, fontSize, letterSpacing, lineHeight)
         tag.style.letterSpacing = letterSpacing + "px";
         tag.style.lineHeight = lineHeight + "px";
     }
+    
+    /*if (fontSize !== FONT_SIZE)
+    {
+        tag.style.textAlign = "left";
+        tag.style.textAlignLast = "left";
+    }
+    else
+    {
+        tag.style.textAlign = "center";
+        tag.style.textAlignLast = "center";
+    }*/
     
     tag.style.visibility = "visible";
 }
@@ -159,7 +177,8 @@ function particuleAnimation()
     let bufferPosition = null;
     let bufferDiameterGradient = null;
     let bufferColorAlpha = null;
-    let timePrevious = 0;
+    let timePreviousRelative = 0;
+    let timePreviousAbsolute = 0;
     let indexParticule = 0;
     let index2 = 0;
     let index4 = 0;
@@ -805,17 +824,17 @@ function particuleAnimation()
         timeAttractorRandom2 = performance.now() + randomInteger(100, 2000);
     }
     
-    timePrevious = performance.now();
-    let timeInit = performance.now();
+    timePreviousRelative = performance.now();
+    timePreviousAbsolute = performance.now();
     
     function updateAnimation(time)
     {
         const H_SCALE = window.innerWidth * 0.5;
         const V_SCALE = window.innerHeight * 0.5;
         const DPR = window.devicePixelRatio || 1;
-        const TIME_DELTA = Math.min((time - timePrevious) * 0.001, 0.04);
+        const TIME_DELTA = Math.min((time - timePreviousRelative) * 0.001, 0.04);
         
-        timePrevious = time;
+        timePreviousRelative = time;
         
         //STATE
         /*if (performance.now() > timeState)
@@ -1113,7 +1132,7 @@ function particuleAnimation()
             
             magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
-            fadeIn = (time - timeInit) * 0.001;
+            fadeIn = (time - timePreviousAbsolute) * 0.001;
             
             if (fadeIn > 1)
             {
@@ -1178,7 +1197,34 @@ function particuleAnimation()
 
 function text()
 {
+    let timePreviousAbsolute = 0;
+    
+    _tagOvertitle = document.getElementById("tag-overtitle");
     _tagTitle = document.getElementById("tag-title");
+    _tagSubtitle = document.getElementById("tag-subtitle");
+    _tagScrollDown = document.getElementById("tag-scroll-down");
+    
+    timePreviousAbsolute = performance.now();
+    
+    function updateAnimation(time)
+    {
+        fadeIn = (time - timePreviousAbsolute) * 0.001;
+        
+        if (fadeIn > 1)
+        {
+            fadeIn = 1;
+        }
+        
+        _tagOvertitle.style.opacity = fadeIn;
+        _tagTitle.style.opacity = fadeIn;
+        _tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
+        _tagSubtitle.style.opacity = fadeIn;
+        _tagScrollDown.style.opacity = fadeIn;
+        
+        requestAnimationFrame(updateAnimation);
+    }
+    
+    requestAnimationFrame(updateAnimation);
 }
 
 function windowResize()
