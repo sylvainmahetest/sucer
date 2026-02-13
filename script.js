@@ -1227,6 +1227,8 @@ function text()
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
         
+        document.body.style.opacity = fadeIn;
+        
         requestAnimationFrame(updateAnimation);
     }
     
@@ -1289,7 +1291,7 @@ function screenOrientation()
 
 function loaded()
 {
-    document.body.style.opacity = 1;
+    
 }
 
 function href(index)
