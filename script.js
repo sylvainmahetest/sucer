@@ -1227,7 +1227,7 @@ function text()
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
         
-      //  document.body.style.opacity = fadeIn;
+        document.body.style.opacity = 0.1*fadeIn;
         
         requestAnimationFrame(updateAnimation);
     }
