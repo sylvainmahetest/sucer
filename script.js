@@ -1206,13 +1206,13 @@ function text()
     
     timePreviousAbsolute = performance.now();
     
-    document.body.style.opacity = 0;
+    document.body.style.opacity = 1;
     
     function updateAnimation(time)
     {
         let fadeIn = (time - timePreviousAbsolute) * 0.001;
         let fadeIn2 = (time - timePreviousAbsolute) * 0.0005;
-        
+     //   console.log(fadeIn);
         if (fadeIn > 1)
         {
             fadeIn = 1;
@@ -1229,7 +1229,7 @@ function text()
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
         
-        document.body.style.opacity = fadeIn;
+       // document.body.style.opacity = fadeIn;
         
         requestAnimationFrame(updateAnimation);
     }

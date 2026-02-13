@@ -149,9 +149,9 @@ body
 {
   z-index: 0;
   transition-behavior: normal;
-  transition-delay: 0s;
-  transition-duration: 0s;
-  transition-property: none;
+  transition-delay: 1s;
+  transition-duration: 1s;
+  transition-property: opacity ;
   transition-timing-function: linear;
   animation-name: none;
   animation-delay: 0s;
