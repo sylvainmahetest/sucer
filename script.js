@@ -1206,7 +1206,7 @@ function text()
     
     timePreviousAbsolute = performance.now();
     
-    document.body.style.opacity = 1;
+    
     
     function updateAnimation(time)
     {
@@ -1293,7 +1293,7 @@ function screenOrientation()
 
 function loaded()
 {
-    
+    document.body.style.opacity = 1;
 }
 
 function href(index)
