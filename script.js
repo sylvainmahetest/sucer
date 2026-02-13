@@ -1206,33 +1206,31 @@ function text()
     
     timePreviousAbsolute = performance.now();
     
-    function updateAnimation(time)
+    let startTime = null;
+
+function updateAnimation(time)
+{
+    if (startTime === null)
     {
-        let fadeIn = (time - timePreviousAbsolute) * 0.001;
-        let fadeIn2 = (time - timePreviousAbsolute) * 0.0005;
-        
-        if (fadeIn > 1)
-        {
-            fadeIn = 1;
-        }
-        
-        if (fadeIn2 > 1)
-        {
-            fadeIn2 = 1;
-        }
-        
-        _tagOvertitle.style.opacity = fadeIn;
-        _tagTitle.style.opacity = fadeIn2*fadeIn2;
-        //_tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
-        _tagSubtitle.style.opacity = fadeIn;
-        _tagScrollDown.style.opacity = fadeIn;
-        
-        document.body.style.opacity = 0.1*fadeIn;
-        
-        requestAnimationFrame(updateAnimation);
+        startTime = time; // ← référence parfaite
     }
-    
+
+    let elapsed = time - startTime;
+
+    let fadeIn = Math.min(elapsed * 0.001, 1);
+    let fadeIn2 = Math.min(elapsed * 0.0005, 1);
+
+    _tagOvertitle.style.opacity = fadeIn;
+    _tagTitle.style.opacity = fadeIn2 * fadeIn2;
+    _tagSubtitle.style.opacity = fadeIn;
+    _tagScrollDown.style.opacity = fadeIn;
+
+    document.body.style.opacity = 0.1 * fadeIn;
+
     requestAnimationFrame(updateAnimation);
+}
+
+requestAnimationFrame(updateAnimation);
 }
 
 function windowResize()
