@@ -1208,16 +1208,22 @@ function text()
     
     function updateAnimation(time)
     {
-        fadeIn = (time - timePreviousAbsolute) * 0.001;
+        let fadeIn = (time - timePreviousAbsolute) * 0.001;
+        let fadeIn2 = (time - timePreviousAbsolute) * 0.0005;
         
         if (fadeIn > 1)
         {
             fadeIn = 1;
         }
         
+        if (fadeIn2 > 1)
+        {
+            fadeIn2 = 1;
+        }
+        
         _tagOvertitle.style.opacity = fadeIn;
-        _tagTitle.style.opacity = fadeIn;
-        _tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
+        _tagTitle.style.opacity = fadeIn2*fadeIn2;
+        //_tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
         
@@ -1283,7 +1289,7 @@ function screenOrientation()
 
 function loaded()
 {
-    
+    document.body.style.visibility = "visible";
 }
 
 function href(index)
