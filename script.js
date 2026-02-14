@@ -460,9 +460,9 @@ function particuleAnimation()
     
     function setupWebGL()
     {
-    	
+    	_tagCanvasParticule.style.visibility = "visible";
         _webGL = _tagCanvasParticule.getContext("webgl");
-        //_tagCanvasParticule.style.visibility = "visible";
+        
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
