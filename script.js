@@ -3,7 +3,6 @@ customElements.define("tag-overtitle", class extends HTMLElement{});
 customElements.define("tag-title", class extends HTMLElement{});
 customElements.define("tag-subtitle", class extends HTMLElement{});
 customElements.define("tag-scroll-down", class extends HTMLElement{});
-customElements.define("tag-black", class extends HTMLElement{});
 
 let _tagCanvasParticule = null;
 let _webGL = null;
@@ -16,7 +15,6 @@ let _tagOvertitle = null;
 let _tagTitle = null;
 let _tagSubtitle = null;
 let _tagScrollDown = null;
-let _tagBlack = null;
 
 function fitText(tag, fontSize, letterSpacing, lineHeight)
 {
@@ -1205,33 +1203,23 @@ function text()
     _tagTitle = document.getElementById("tag-title");
     _tagSubtitle = document.getElementById("tag-subtitle");
     _tagScrollDown = document.getElementById("tag-scroll-down");
-    _tagBlack= document.getElementById("tag-black");
+    
     timePreviousAbsolute = performance.now();
-    
-    
     
     function updateAnimation(time)
     {
-        let fadeIn = (time - timePreviousAbsolute) * 0.001;
-        let fadeIn2 = (time - timePreviousAbsolute) * 0.0005;
-     //   console.log(fadeIn);
+        fadeIn = (time - timePreviousAbsolute) * 0.001;
+        
         if (fadeIn > 1)
         {
             fadeIn = 1;
         }
         
-        if (fadeIn2 > 1)
-        {
-            fadeIn2 = 1;
-        }
-        
         _tagOvertitle.style.opacity = fadeIn;
-        _tagTitle.style.opacity = fadeIn2*fadeIn2;
-        //_tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
+        _tagTitle.style.opacity = fadeIn;
+        _tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
         _tagSubtitle.style.opacity = fadeIn;
         _tagScrollDown.style.opacity = fadeIn;
-        
-       _tagBlack.style.opacity = 1 - fadeIn;
         
         requestAnimationFrame(updateAnimation);
     }
@@ -1295,7 +1283,7 @@ function screenOrientation()
 
 function loaded()
 {
- //   document.body.style.opacity = 1;
+    
 }
 
 function href(index)
