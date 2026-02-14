@@ -460,7 +460,9 @@ function particuleAnimation()
     
     function setupWebGL()
     {
+    	
         _webGL = _tagCanvasParticule.getContext("webgl");
+        //_tagCanvasParticule.style.visibility = "visible";
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
@@ -1241,8 +1243,8 @@ function windowResize()
         
         _tagCanvasParticule.width = Math.floor(hWindow * dpr);
         _tagCanvasParticule.height = Math.floor(vWindow * dpr);
-        _tagCanvasParticule.style.width = hWindow + "px";
-        _tagCanvasParticule.style.height = vWindow + "px";
+        //_tagCanvasParticule.style.width = hWindow + "px";
+       // _tagCanvasParticule.style.height = vWindow + "px";
         
         _webGL.viewport(0, 0, _tagCanvasParticule.width, _tagCanvasParticule.height);
         
