@@ -1156,7 +1156,7 @@ function particuleAnimation()
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
             colorAlpha[indexRed] = 1 - (0.25 * magnitude);
-           // colorAlpha[indexGreen] = (1 - (0.75 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexGreen] = (1 - (0.75 * (1 - magnitude))) * fadeIn;
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
             //////////////////////////(0.1 - (0.1 * 0.5 * 1))
         }
@@ -1178,7 +1178,7 @@ function particuleAnimation()
         
         _webGL.clear(_webGL.COLOR_BUFFER_BIT | _webGL.DEPTH_BUFFER_BIT | _webGL.STENCIL_BUFFER_BIT);
         _webGL.drawArrays(_webGL.POINTS, 0, COUNT_PARTICLE);
-        _tagCanvasParticule.style.opacity = "1";
+        _tagCanvasParticule.style.opacity = "0";
         requestAnimationFrame(updateAnimation);
     }
     
