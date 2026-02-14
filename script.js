@@ -460,7 +460,7 @@ function particuleAnimation()
     
     function setupWebGL()
     {
-    	_tagCanvasParticule.style.visibility = "visible";
+    	
         _webGL = _tagCanvasParticule.getContext("webgl");
         
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
@@ -1193,7 +1193,7 @@ function particuleAnimation()
     startBufferPosition();
     startBufferDiameterGradient();
     startBufferColorAlpha();
-    
+    _tagCanvasParticule.style.opacity = "1";
     requestAnimationFrame(updateAnimation);
 }
 

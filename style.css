@@ -273,8 +273,8 @@ body #tag-canvas-particule
   animation-iteration-count: 0;
   animation-play-state: paused;
   display: block;
-  visibility: hidden;
-  opacity: 1;
+  visibility: visible ;
+  opacity: 0;
   position: fixed;
   float: none;
   flex-direction: row;
