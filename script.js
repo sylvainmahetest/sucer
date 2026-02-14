@@ -1178,7 +1178,7 @@ function particuleAnimation()
         
         _webGL.clear(_webGL.COLOR_BUFFER_BIT | _webGL.DEPTH_BUFFER_BIT | _webGL.STENCIL_BUFFER_BIT);
         _webGL.drawArrays(_webGL.POINTS, 0, COUNT_PARTICLE);
-        _tagCanvasParticule.style.opacity = "0";
+        _tagCanvasParticule.style.opacity = "1";
         requestAnimationFrame(updateAnimation);
     }
     
