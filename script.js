@@ -1135,7 +1135,9 @@ function particuleAnimation()
             
             magnitude = Math.min(SAFE_SQRT + Math.sqrt((xBlur * xBlur) + (yBlur * yBlur)), 1);
             
+            //const TIME_DELTA = Math.min((time - timePreviousAbsolute) * 0.001, 0.04);
             fadeIn = (time - timePreviousAbsolute) * 0.001;
+        //   fadeIn = Math.min((time - timePreviousAbsolute) * 0.001, 0.04);
             
             if (fadeIn > 1)
             {
@@ -1216,7 +1218,8 @@ function text()
     
     function updateAnimation(time)
     {
-        fadeInOpacity = (time - timePreviousAbsolute) * (1 / (DURATION_OPACITY * 1000));
+    	fadeInOpacity = (time - timePreviousAbsolute) * 0.001;
+       // fadeInOpacity = (time - timePreviousAbsolute) * (1 / (DURATION_OPACITY * 1000));
         
         if (fadeInOpacity > 1)
         {
@@ -1225,7 +1228,7 @@ function text()
         
         if (time - timePreviousAbsolute <= DURATION_POSITION * 1000)
         {
-            fadeInPosition = 1 - Math.pow(1 - ((time - timePreviousAbsolute) * (1 / (DURATION_POSITION * 1000))), 2);
+            fadeInPosition = 1 - Math.pow(1 - ((time - timePreviousAbsolute) * 0.001), 2);
             
             if (fadeInPosition > 1)
             {
