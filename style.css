@@ -1,13 +1,13 @@
 :root
 {
   --colorA: rgb(0, 0, 0);
-  --colorB: rgb(20, 20, 20);
-  --colorC: rgb(70, 70, 70);
+  
+  --colorB: rgb(12, 12, 12);
+  --colorC: rgba(12, 12, 12, 0.5);
+  
   --colorD: rgb(150, 150, 150);
-  --colorE: rgb(200, 200, 200);
-  --colorF: rgb(230, 230, 230);
-  --colorG: rgb(255, 255, 255);
-  --colorH: rgba(40, 40, 40, 0.2);
+  
+  --colorZ: rgb(255, 255, 255);
 }
 
 @font-face
@@ -133,7 +133,7 @@ html
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
   transform: none;
@@ -191,7 +191,7 @@ body
   padding-right: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
-  background-color: rgb(12, 12, 12);
+  background-color: var(--colorB);
   background-image: none;
   background-attachment: local;
   background-clip: border-box;
@@ -244,7 +244,7 @@ body
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
   transform: none;
@@ -260,9 +260,9 @@ body #tag-canvas-particule
 {
   z-index: 0;
   transition-behavior: normal;
-  transition-delay: 1s;
-  transition-duration: 1s;
-  transition-property: opacity;
+  transition-delay: 0s;
+  transition-duration: 0s;
+  transition-property: none;
   transition-timing-function: linear;
   animation-name: none;
   animation-delay: 0s;
@@ -273,8 +273,8 @@ body #tag-canvas-particule
   animation-iteration-count: 0;
   animation-play-state: paused;
   display: block;
-  visibility: visible ;
-  opacity: 0;
+  visibility: visible;
+  opacity: 1;
   position: fixed;
   float: none;
   flex-direction: row;
@@ -362,7 +362,7 @@ body #tag-canvas-particule
   filter: none;
   user-select: none;
   cursor: auto;
-  pointer-events: none;
+  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
@@ -466,7 +466,7 @@ body #tag-overlay
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
   transform: none;
@@ -496,7 +496,7 @@ body #tag-name
   animation-play-state: paused;
   display: block;
   visibility: visible;
-  opacity: 1;
+  opacity: 0;
   position: fixed;
   float: none;
   flex-direction: row;
@@ -524,7 +524,7 @@ body #tag-name
   padding-right: 11px;
   padding-top: 6px;
   padding-bottom: 6px;
-  background-color: rgb(255, 255, 255);
+  background-color: var(--colorZ);
   background-image: none;
   background-attachment: local;
   background-clip: border-box;
@@ -550,7 +550,7 @@ body #tag-name
   border-right-color: transparent;
   border-top-color: transparent;
   border-bottom-color: transparent;
-  box-shadow: 0px 10px 7px rgba(12, 12, 12, 0.5);
+  box-shadow: 0px 10px 7px var(--colorB);
   font-family: "fontB";
   font-size: 18px;
   font-weight: 500;
@@ -564,7 +564,7 @@ body #tag-name
   text-decoration-color: transparent;
   text-shadow: none;
   writing-mode: horizontal-tb;
-  color: rgb(0, 0, 0);
+  color: var(--colorA);
   caret-color: transparent;
   white-space: pre-wrap;
   word-break: break-word;
@@ -577,10 +577,10 @@ body #tag-name
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
-  transform: none;
+  transform: translate(0px, -50px);
   filter: none;
   user-select: none;
   cursor: auto;
@@ -673,9 +673,9 @@ body #tag-overtitle
   text-underline-offset: 0px;
   text-decoration-style: none;
   text-decoration-color: transparent;
-  text-shadow: 0px 10px 7px rgba(12, 12, 12, 0.5);
+  text-shadow: 0px 10px 7px var(--colorC);
   writing-mode: horizontal-tb;
-  color: rgb(150, 150, 150);
+  color: var(--colorD);
   caret-color: transparent;
   white-space: pre-wrap;
   word-break: break-word;
@@ -688,10 +688,10 @@ body #tag-overtitle
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
-  transform: none;
+  transform: translate(-10px, 0px);
   filter: none;
   user-select: none;
   cursor: auto;
@@ -784,9 +784,9 @@ body #tag-title
   text-underline-offset: 0px;
   text-decoration-style: none;
   text-decoration-color: transparent;
-  text-shadow: 0px 15px 7px rgba(12, 12, 12, 0.5);
+  text-shadow: 0px 15px 7px var(--colorC);
   writing-mode: horizontal-tb;
-  color: rgb(255, 255, 255);
+  color: var(--colorZ);
   caret-color: transparent;
   /*white-space: pre-wrap;*/white-space: pre;
   /*word-break: break-word;*/word-break: keep-all;
@@ -799,16 +799,24 @@ body #tag-title
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
-  transform: none;
+  transform: translate(-30px, 0px);
   filter: none;
   user-select: none;
   cursor: auto;
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+}
+
+body #tag-title bold
+{
+  background-color: var(--colorZ);
+  box-shadow: 0px 15px 7px var(--colorC);
+  text-shadow: none;
+  color: var(--colorB);
 }
 
 body #tag-subtitle
@@ -895,9 +903,9 @@ body #tag-subtitle
   text-underline-offset: 0px;
   text-decoration-style: none;
   text-decoration-color: transparent;
-  text-shadow: 0px 10px 7px rgba(12, 12, 12, 0.5);
+  text-shadow: 0px 10px 7px var(--colorC);
   writing-mode: horizontal-tb;
-  color: rgb(255, 255, 255);
+  color: var(--colorZ);
   caret-color: transparent;
   white-space: pre-wrap;
   word-break: break-word;
@@ -910,10 +918,10 @@ body #tag-subtitle
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
-  transform: none;
+  transform: translate(-50px, 0px);
   filter: none;
   user-select: none;
   cursor: auto;
@@ -1006,9 +1014,9 @@ body #tag-scroll-down
   text-underline-offset: 0px;
   text-decoration-style: none;
   text-decoration-color: transparent;
-  text-shadow: 0px 10px 7px rgba(12, 12, 12, 0.5);
+  text-shadow: 0px 10px 7px var(--colorC);
   writing-mode: horizontal-tb;
-  color: rgb(255, 255, 255);
+  color: var(--colorZ);
   caret-color: transparent;
   white-space: pre-wrap;
   word-break: break-word;
@@ -1021,10 +1029,10 @@ body #tag-scroll-down
   outline-offset: 0px;
   outline-style: none;
   outline-color: transparent;
-  object-fit: none;
+  object-fit: fill;
   image-orientation: none;
   transform-origin: center;
-  transform: none;
+  transform: translate(-35px, -35px);
   filter: none;
   user-select: none;
   cursor: auto;

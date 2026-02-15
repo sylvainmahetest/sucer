@@ -1,4 +1,6 @@
 customElements.define("tag-canvas-particule", class extends HTMLElement{});
+
+customElements.define("tag-name", class extends HTMLElement{});
 customElements.define("tag-overtitle", class extends HTMLElement{});
 customElements.define("tag-title", class extends HTMLElement{});
 customElements.define("tag-subtitle", class extends HTMLElement{});
@@ -11,6 +13,7 @@ let _rxAccelerometer = 0;
 let _ryAccelerometer = 0;
 let _rzAccelerometer = 0;
 
+let _tagName = null;
 let _tagOvertitle = null;
 let _tagTitle = null;
 let _tagSubtitle = null;
@@ -460,9 +463,7 @@ function particuleAnimation()
     
     function setupWebGL()
     {
-    	
         _webGL = _tagCanvasParticule.getContext("webgl");
-        
         _webGL.clearColor(0.05, 0.05, 0.05, 1);
         _webGL.enable(_webGL.BLEND);
         _webGL.blendFunc(_webGL.SRC_ALPHA, _webGL.ONE_MINUS_SRC_ALPHA);
@@ -1156,7 +1157,7 @@ function particuleAnimation()
             //colorAlpha[indexGreen] = 1 - (0.2 * (1 - magnitude));
             
             colorAlpha[indexRed] = 1 - (0.25 * magnitude);
-            colorAlpha[indexGreen] = (1 - (0.75 * (1 - magnitude))) * fadeIn;
+            colorAlpha[indexGreen] = 1 - (0.75 * (1 - magnitude));
             colorAlpha[indexAlpha] = (alphaStart[indexParticule] - (alphaStart[indexParticule] * 0.5 * magnitude)) * fadeIn;
             //////////////////////////(0.1 - (0.1 * 0.5 * 1))
         }
@@ -1178,7 +1179,7 @@ function particuleAnimation()
         
         _webGL.clear(_webGL.COLOR_BUFFER_BIT | _webGL.DEPTH_BUFFER_BIT | _webGL.STENCIL_BUFFER_BIT);
         _webGL.drawArrays(_webGL.POINTS, 0, COUNT_PARTICLE);
-      //  _tagCanvasParticule.style.opacity = "1";
+        
         requestAnimationFrame(updateAnimation);
     }
     
@@ -1200,7 +1201,12 @@ function particuleAnimation()
 function text()
 {
     let timePreviousAbsolute = 0;
+    let fadeInOpacity = 0;
+    let fadeInPosition = 0;
+    const DURATION_OPACITY = 1;
+    const DURATION_POSITION = 1;
     
+    _tagName = document.getElementById("tag-name");
     _tagOvertitle = document.getElementById("tag-overtitle");
     _tagTitle = document.getElementById("tag-title");
     _tagSubtitle = document.getElementById("tag-subtitle");
@@ -1210,20 +1216,50 @@ function text()
     
     function updateAnimation(time)
     {
-        fadeIn = (time - timePreviousAbsolute) * 0.001;
+        fadeInOpacity = (time - timePreviousAbsolute) * (1 / (DURATION_OPACITY * 1000));
         
-        if (fadeIn > 1)
+        if (fadeInOpacity > 1)
         {
-            fadeIn = 1;
+            fadeInOpacity = 1;
         }
         
-        _tagOvertitle.style.opacity = fadeIn;
-        _tagTitle.style.opacity = fadeIn;
-        _tagTitle.style.transform = "scale(" + (1 - (0.05 * (1 - fadeIn))) + ")";
-        _tagSubtitle.style.opacity = fadeIn;
-        _tagScrollDown.style.opacity = fadeIn;
+        if (time <= DURATION_POSITION * 1000)
+        {
+            fadeInPosition = 1 - Math.pow(1 - ((time - timePreviousAbsolute) * (1 / (DURATION_POSITION * 1000))), 2);
+            
+            if (fadeInPosition > 1)
+            {
+                fadeInPosition = 1;
+            }
+        }
+        else
+        {
+            fadeInPosition = 1;
+        }
         
-        requestAnimationFrame(updateAnimation);
+        _tagName.style.transform = "translate(0px, " + (-50 * (1 - fadeInPosition)) + "px)";
+        _tagName.style.opacity = fadeInOpacity;
+        
+        _tagOvertitle.style.transform = "translate(" + (-10 * (1 - fadeInPosition)) + "px, 0px)";
+        _tagOvertitle.style.opacity = fadeInOpacity;
+        
+        _tagTitle.style.transform = "translate(" + (-30 * (1 - fadeInPosition)) + "px, 0px)";
+        _tagTitle.style.opacity = fadeInOpacity;
+        
+        _tagSubtitle.style.transform = "translate(" + (-50 * (1 - fadeInPosition)) + "px, 0px)";
+        _tagSubtitle.style.opacity = fadeInOpacity;
+        
+        _tagScrollDown.style.transform = "translate(" + (-35 * (1 - fadeInPosition)) + "px, " + (-35 * (1 - fadeInPosition)) + "px)";
+        _tagScrollDown.style.opacity = fadeInOpacity;
+        
+        if (fadeInOpacity !== 1 && fadeInPosition !== 1)
+        {
+            requestAnimationFrame(updateAnimation);
+        }
+        /*else
+        {
+            console.log("FIN");
+        }*/
     }
     
     requestAnimationFrame(updateAnimation);
@@ -1244,7 +1280,7 @@ function windowResize()
         _tagCanvasParticule.width = Math.floor(hWindow * dpr);
         _tagCanvasParticule.height = Math.floor(vWindow * dpr);
         //_tagCanvasParticule.style.width = hWindow + "px";
-       // _tagCanvasParticule.style.height = vWindow + "px";
+        //_tagCanvasParticule.style.height = vWindow + "px";
         
         _webGL.viewport(0, 0, _tagCanvasParticule.width, _tagCanvasParticule.height);
         
