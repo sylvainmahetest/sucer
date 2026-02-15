@@ -1223,7 +1223,7 @@ function text()
             fadeInOpacity = 1;
         }
         
-        if (time <= DURATION_POSITION * 1000)
+        if (time - timePreviousAbsolute <= DURATION_POSITION * 1000)
         {
             fadeInPosition = 1 - Math.pow(1 - ((time - timePreviousAbsolute) * (1 / (DURATION_POSITION * 1000))), 2);
             
